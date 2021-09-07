@@ -4,7 +4,7 @@ import {
   ChakraProvider,
   extendTheme,
 } from '@chakra-ui/react'
-
+import Header from './Header'
 
 const theme = extendTheme({
   fonts: {
@@ -21,6 +21,7 @@ function App() {
 
   return (
     <ChakraProvider theme={theme}>
+      <Header></Header>
     </ChakraProvider >
   );
 }
