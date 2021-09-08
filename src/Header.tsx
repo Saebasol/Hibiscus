@@ -24,16 +24,16 @@ function Header() {
   return (
     <Flex bg="blackAlpha.100" w="100%" p={4}>
       <Button
-        variant="ghost"
-        onClick={() => window.open('https://github.com/Saebasol/', '_blank')}
+        variant={textVisible ? 'ghost' : 'link'}
+        onClick={() => window.location.href = '/'}
         mr={1}
       >
         <Avatar
           size="sm"
           src="https://avatars.githubusercontent.com/u/73676374?s=200&v=4"
-          mr={1}
+          mr={textVisible ? 2 : 0}
         />
-        {textVisible ? <Text fontSize="sm">HelioTrope</Text> : ""}
+        {textVisible ? <Text fontSize="sm">Heliotrope-web</Text> : ""}
       </Button>
       <IconButton mr={1} aria-label="Random" icon={<RepeatIcon />} />
       <IconButton aria-label="Search" icon={<SearchIcon />} />
