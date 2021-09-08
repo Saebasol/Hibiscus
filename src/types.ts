@@ -1,13 +1,9 @@
-interface heliotropeValueUrl{
-    value: string
-    url: string
+interface heliotropeValueUrl {
+  value: string;
+  url: string;
 }
 
-
-
-interface heliotropeGalleryInfo{
-    
-}
+interface heliotropeGalleryInfo {}
 
 export interface heliotropeInfo{
     title: string
