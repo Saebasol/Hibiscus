@@ -2,10 +2,13 @@ import React from 'react';
 import {
   Button,
   Flex,
+  Center,
   Spacer,
   Avatar,
   IconButton,
-  useColorMode
+  Text,
+  useColorMode,
+  useMediaQuery,
 } from '@chakra-ui/react';
 import {
   MoonIcon,
@@ -16,11 +19,12 @@ import {
 } from '@chakra-ui/icons';
 
 function Header() {
+  const [ textVisible ] = useMediaQuery('(min-width: 720px)');
   const { colorMode, toggleColorMode } = useColorMode();
   return (
     <Flex bg="blackAlpha.100" w="100%" p={4}>
       <Button
-      variant="link"
+        variant="ghost"
         onClick={() => window.open('https://github.com/Saebasol/', '_blank')}
         mr={1}
       >
@@ -29,6 +33,7 @@ function Header() {
           src="https://avatars.githubusercontent.com/u/73676374?s=200&v=4"
           mr={1}
         />
+        {textVisible ? <Text fontSize="sm">HelioTrope</Text> : ""}
       </Button>
       <IconButton mr={1} aria-label="Random" icon={<RepeatIcon />} />
       <IconButton aria-label="Search" icon={<SearchIcon />} />
@@ -42,7 +47,11 @@ function Header() {
       >
         {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
       </IconButton>
-      <IconButton mr={1} aria-label="Login button" icon={<ArrowForwardIcon />} />
+      <IconButton
+        mr={1}
+        aria-label="Login button"
+        icon={<ArrowForwardIcon />}
+      />
     </Flex>
   );
 }
