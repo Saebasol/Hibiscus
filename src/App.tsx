@@ -10,7 +10,7 @@ function App() {
 
   return (
     <ChakraProvider theme={theme}>
-      <Header></Header>
+      <Header />
     </ChakraProvider>
   );
 }
