@@ -3,10 +3,9 @@ import {
   Button,
   Flex,
   Spacer,
-  Menu,
+  Avatar,
   IconButton,
-  Text,
-  useColorMode,
+  useColorMode
 } from '@chakra-ui/react';
 import {
   MoonIcon,
@@ -21,17 +20,18 @@ function Header() {
   return (
     <Flex bg="blackAlpha.100" w="100%" p={4}>
       <Button
+      variant="link"
         onClick={() => window.open('https://github.com/Saebasol/', '_blank')}
         mr={1}
       >
-        <Text fontSize="md">Heliotrope</Text>
+        <Avatar
+          size="sm"
+          src="https://avatars.githubusercontent.com/u/73676374?s=200&v=4"
+          mr={1}
+        />
       </Button>
-      <Button mr={2} aria-label="Random" leftIcon={<RepeatIcon />}>
-        <Text fontSize="sm">랜덤 작품</Text>
-      </Button>
-      <Button>
-        <SearchIcon />
-      </Button>
+      <IconButton mr={1} aria-label="Random" icon={<RepeatIcon />} />
+      <IconButton aria-label="Search" icon={<SearchIcon />} />
       <Spacer />
       <IconButton
         onClick={toggleColorMode}
@@ -42,10 +42,7 @@ function Header() {
       >
         {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
       </IconButton>
-      <IconButton
-        aria-label="Login button"
-        icon={<ArrowForwardIcon />}
-      ></IconButton>
+      <IconButton mr={1} aria-label="Login button" icon={<ArrowForwardIcon />} />
     </Flex>
   );
 }
