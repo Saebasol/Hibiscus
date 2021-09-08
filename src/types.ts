@@ -5,21 +5,21 @@ interface heliotropeValueUrl {
 
 interface heliotropeGalleryInfo {}
 
-interface heliotropeInfo {
-  title: string;
-  thumbnail: string;
-  artist: Array<heliotropeValueUrl>;
-  group: Array<heliotropeValueUrl>;
-  type?: Array<heliotropeValueUrl>;
-  language?: Array<heliotropeValueUrl>;
-  series: Array<heliotropeValueUrl>;
-  character: Array<heliotropeValueUrl>;
-  tags: Array<heliotropeValueUrl>;
-  date: string;
+export interface heliotropeInfo{
+    title: string
+    thumbnail: string
+    artist: heliotropeValueUrl[]
+    group: heliotropeValueUrl[]
+    type: heliotropeValueUrl[] | null
+    language: heliotropeValueUrl[] | null
+    series: heliotropeValueUrl[]
+    character: heliotropeValueUrl[]
+    tags: heliotropeValueUrl[]
+    date: string
 }
 
-export interface heliotropeList {
-  status: number;
-  list: Array<heliotropeInfo>;
-  total: number;
+export interface heliotropeList{
+    status: number
+    list: heliotropeInfo[]
+    total: number
 }
