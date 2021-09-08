@@ -1,28 +1,17 @@
-import * as React from 'react'
-
-import {
-  ChakraProvider,
-  extendTheme,
-} from '@chakra-ui/react'
-import Header from './Header'
-
-const theme = extendTheme({
-  fonts: {
-    heading: 'Inter, Noto Sans KR',
-    body: 'Inter, Noto Sans KR'
-  },
-  initialColorMode: 'dark'
-})
+import * as React from 'react';
+import { ChakraProvider } from '@chakra-ui/react';
+import Header from './Header';
+import theme from './theme';
 
 function App() {
-  const { useEffect } = React
+  const { useEffect } = React;
 
-  useEffect(() => {}, [])
+  useEffect(() => {}, []);
 
   return (
     <ChakraProvider theme={theme}>
       <Header></Header>
-    </ChakraProvider >
+    </ChakraProvider>
   );
 }
 
