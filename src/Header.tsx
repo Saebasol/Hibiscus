@@ -13,9 +13,7 @@ import {
 import {
   MoonIcon,
   SunIcon,
-  SearchIcon,
-  ArrowForwardIcon,
-  RepeatIcon,
+  SearchIcon
 } from '@chakra-ui/icons';
 import { FiShuffle, FiLogIn } from 'react-icons/fi'
 
