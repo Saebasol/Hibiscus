@@ -1,4 +1,4 @@
-interface heliotropeValueUrl {
+export interface heliotropeValueUrl {
   value: string;
   url: string;
 }
