@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { ChakraProvider } from '@chakra-ui/react';
 import Header from './Header';
+import Footer from './Footer';
 import theme from './theme';
 
 function App() {
@@ -11,6 +12,7 @@ function App() {
   return (
     <ChakraProvider theme={theme}>
       <Header />
+      <Footer />
     </ChakraProvider>
   );
 }

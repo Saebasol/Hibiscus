@@ -1,11 +1,12 @@
 import React from 'react';
 import {
   Button,
-  Flex,
+  Center,
   Spacer,
   Avatar,
   IconButton,
   Text,
+  Icon,
   useColorMode,
   useMediaQuery,
 } from '@chakra-ui/react';
@@ -16,25 +17,42 @@ import {
   ArrowForwardIcon,
   RepeatIcon,
 } from '@chakra-ui/icons';
+import { FiShuffle, FiLogIn } from 'react-icons/fi'
 
 function Header() {
   const [textVisible] = useMediaQuery('(min-width: 720px)');
   const { colorMode, toggleColorMode } = useColorMode();
   return (
-    <Flex bg="blackAlpha.100" w="100%" p={4}>
-      <Button
-        variant={textVisible ? 'ghost' : 'link'}
-        onClick={() => (window.location.href = '/')}
+    <Center bg="blackAlpha.100" w="100%" p={4}>
+      {textVisible ? (
+        <Button
+          variant={textVisible ? 'solid' : 'outline'}
+          onClick={() => (window.location.href = '/')}
+          mr={1}
+        >
+          <Avatar
+            size="sm"
+            src="https://avatars.githubusercontent.com/u/73676374?s=200&v=4"
+            mr={2}
+          />
+          {textVisible ? <Text fontSize="sm">Heliotrope-web</Text> : ''}
+        </Button>
+      ) : (
+        <Center>
+          <Avatar
+            size="sm"
+            src="https://avatars.githubusercontent.com/u/73676374?s=200&v=4"
+            mr={2}
+            ml={1}
+          />
+        </Center>
+      )}
+      <IconButton
         mr={1}
-      >
-        <Avatar
-          size="sm"
-          src="https://avatars.githubusercontent.com/u/73676374?s=200&v=4"
-          mr={textVisible ? 2 : 0}
-        />
-        {textVisible ? <Text fontSize="sm">Heliotrope-web</Text> : ''}
-      </Button>
-      <IconButton mr={1} aria-label="Random" icon={<RepeatIcon />} />
+        aria-label="Login button"
+        icon={<Icon as={FiLogIn} />}
+      />
+      <IconButton mr={1} aria-label="Random" icon={<Icon as={FiShuffle} />} />
       <IconButton aria-label="Search" icon={<SearchIcon />} />
       <Spacer />
       <IconButton
@@ -46,12 +64,7 @@ function Header() {
       >
         {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
       </IconButton>
-      <IconButton
-        mr={1}
-        aria-label="Login button"
-        icon={<ArrowForwardIcon />}
-      />
-    </Flex>
+    </Center>
   );
 }
 
