@@ -10,40 +10,30 @@ import {
   useColorMode,
   useMediaQuery,
 } from '@chakra-ui/react';
-import {
-  MoonIcon,
-  SunIcon,
-  SearchIcon
-} from '@chakra-ui/icons';
-import { FiShuffle, FiLogIn } from 'react-icons/fi'
+import { MoonIcon, SunIcon, SearchIcon } from '@chakra-ui/icons';
+import { FiShuffle, FiLogIn } from 'react-icons/fi';
 
 function Header() {
   const [textVisible] = useMediaQuery('(min-width: 720px)');
   const { colorMode, toggleColorMode } = useColorMode();
+  const avatarURL =
+    'https://avatars.githubusercontent.com/u/73676374?s=200&v=4';
+  const goToRoot = (): string => (window.location.href = '/');
   return (
     <Center bg="blackAlpha.100" w="100%" p={4}>
       {textVisible ? (
         <Button
           variant={textVisible ? 'solid' : 'outline'}
-          onClick={() => (window.location.href = '/')}
+          onClick={goToRoot}
           mr={1}
         >
-          <Avatar
-            size="sm"
-            src="https://avatars.githubusercontent.com/u/73676374?s=200&v=4"
-            mr={2}
-          />
+          <Avatar size="sm" src={avatarURL} mr={2} />
           {textVisible ? <Text fontSize="sm">Heliotrope-web</Text> : ''}
         </Button>
       ) : (
-        <Center>
-          <Avatar
-            size="sm"
-            src="https://avatars.githubusercontent.com/u/73676374?s=200&v=4"
-            mr={2}
-            ml={1}
-          />
-        </Center>
+        <Button variant="link" onClick={goToRoot}>
+          <Avatar size="sm" src={avatarURL} mr={2} />
+        </Button>
       )}
       <IconButton
         mr={1}
@@ -55,7 +45,6 @@ function Header() {
       <Spacer />
       <IconButton
         onClick={toggleColorMode}
-        mr={1}
         aria-label={
           colorMode === 'dark' ? 'Enable Light mode' : 'Enable Dark mode'
         }
