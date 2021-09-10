@@ -6,7 +6,7 @@ export interface heliotropeValueUrl {
 interface heliotropeGalleryInfo {}
 
 export interface heliotropeInfo {
-  id: string,
+  index: string,
   title: string;
   thumbnail: string;
   artist: heliotropeValueUrl[];
