@@ -14,7 +14,8 @@
     "framer-motion": "^4",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-icons": "^4.2.0"
+    "react-icons": "^4.2.0",
+    "react-router-dom": "^5.3.0"
   },
   "devDependencies": {
     "@snowpack/plugin-dotenv": "^2.1.0",
@@ -26,6 +27,7 @@
     "@types/mocha": "^8.2.2",
     "@types/react": "^17.0.4",
     "@types/react-dom": "^17.0.3",
+    "@types/react-router-dom": "^5.1.8",
     "@types/snowpack-env": "^2.3.3",
     "@web/test-runner": "^0.13.3",
     "chai": "^4.3.4",
