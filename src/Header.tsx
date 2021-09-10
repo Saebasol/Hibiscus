@@ -20,13 +20,21 @@ function Header() {
     'https://avatars.githubusercontent.com/u/73676374?s=200&v=4';
   const goToRoot = (): string => (window.location.href = '/');
   return (
-    <Center bg="blackAlpha.100" w="100%" p={4}>
+    <Center
+      bg={
+        colorMode === 'dark'
+          ? 'rgba(24, 30, 41, 255)'
+          : 'rgba(240, 240, 240, 255)'
+      }
+      w="100%"
+      p={4}
+      sx={{
+        position: 'sticky',
+        top: '0'
+      }}
+    >
       {textVisible ? (
-        <Button
-          variant={textVisible ? 'solid' : 'outline'}
-          onClick={goToRoot}
-          mr={1}
-        >
+        <Button variant="ghost" onClick={goToRoot} mr={1}>
           <Avatar size="sm" src={avatarURL} mr={2} />
           {textVisible ? <Text fontSize="sm">Heliotrope-web</Text> : ''}
         </Button>
@@ -37,13 +45,20 @@ function Header() {
       )}
       <IconButton
         mr={1}
+        variant="ghost"
         aria-label="Login button"
         icon={<Icon as={FiLogIn} />}
       />
-      <IconButton mr={1} aria-label="Random" icon={<Icon as={FiShuffle} />} />
-      <IconButton aria-label="Search" icon={<SearchIcon />} />
+      <IconButton
+        mr={1}
+        variant="ghost"
+        aria-label="Random"
+        icon={<Icon as={FiShuffle} />}
+      />
+      <IconButton variant="ghost" aria-label="Search" icon={<SearchIcon />} />
       <Spacer />
       <IconButton
+        variant="ghost"
         onClick={toggleColorMode}
         aria-label={
           colorMode === 'dark' ? 'Enable Light mode' : 'Enable Dark mode'
