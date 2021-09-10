@@ -1,13 +1,14 @@
 import * as Chakra from '@chakra-ui/react';
-import type { heliotropeInfo, heliotropeValueUrl } from './types';
 import * as React from 'react';
+import type { heliotropeInfo, heliotropeValueUrl } from './types';
+import HeliotropeTag from './HeliotropeTag';
 
 const tagMapping: Record<string, string> = {
   artist: '작가',
   group: '그룹',
   type: '종류',
   series: '원작',
-  tags: '태그',
+  // tags: '태그' // Tag Badge를위해 주석
 };
 
 const Info = (info: heliotropeInfo) => {
@@ -25,8 +26,13 @@ const Info = (info: heliotropeInfo) => {
           {(tagValue as heliotropeValueUrl[]).map((e) => e.value).join(', ')}
         </Text>,
       );
+    } else if (tagName === 'tags') {
+      (tagValue as heliotropeValueUrl[]).map((tag) => {
+        tagFields.push(<HeliotropeTag tag={tag} />);
+      });
     }
   });
+
   return (
     <Box
       display={{ md: 'flex' }}
@@ -43,7 +49,7 @@ const Info = (info: heliotropeInfo) => {
           maxH="300px"
           width={{ md: 40 }}
           alt="thumbnail"
-          src={info.thumbnail}
+          // src={info.thumbnail}
         />
       </Center>
       <Box mt={{ base: 4, md: 0 }} ml={{ md: 6 }}>
@@ -56,7 +62,7 @@ const Info = (info: heliotropeInfo) => {
           // 여기에 reader 리다이렉트
           href="#"
         >
-          {info.title}
+          <Text textSize="3xl">{info.title}</Text>
         </Link>
         {...tagFields}
       </Box>
