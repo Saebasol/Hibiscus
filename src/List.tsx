@@ -5,6 +5,7 @@ import Info from './Info';
 import type { heliotropeList, heliotropeInfo } from './types';
 
 const initInfo: heliotropeInfo = {
+  index: '1',
   title: 'title',
   thumbnail: '',
   artist: [{ value: 'value', url: 'url' }],
@@ -39,7 +40,7 @@ const List = () => {
   return (
     // 컨테이너 나중에 옮겨야함
     <Container w="100%" maxW={{ lg: '1140px' }} p={4}>
-      {loading ? info.map((e) => <Info {...e} />) : '로딩중...'}
+      {loading ? info.map((e: heliotropeInfo) => <Info {...e} />) : '로딩중...'}
     </Container>
   );
 };
