@@ -37,13 +37,17 @@ const Info = (info: heliotropeInfo) => {
     <Box
       display={{ md: 'flex' }}
       padding="0.3125rem"
-      borderRadius="0.1875rem"
+      borderRadius="0.5rem"
       boxShadow="rgb(0 0 0 / 16%) 0px 0.1875rem 0.1875rem 0px, rgb(0 0 0 / 8%) 0px 0px 0px 0.0625rem"
       border="0.0625rem solid rgba(0,0,0, 0.16)"
       alignItems="stretch"
       marginBottom="1.5rem"
     >
-      <Center backgroundColor="rgb(34, 36, 38)" flexShrink={0}>
+      <Center
+        backgroundColor="rgb(34, 36, 38)"
+        borderRadius="0.5rem"
+        flexShrink={0}
+      >
         <Image
           maxW="100%"
           maxH="300px"
@@ -61,9 +65,11 @@ const Info = (info: heliotropeInfo) => {
           fontWeight="semibold"
           // 여기에 reader 리다이렉트
           href="#"
+          style={{ textDecorationLine: 'none' }}
         >
           <Text textSize="3xl">{info.title}</Text>
         </Link>
+        {/* <Text>태그: </Text> * #수정필요함 */} 
         {...tagFields}
       </Box>
     </Box>
