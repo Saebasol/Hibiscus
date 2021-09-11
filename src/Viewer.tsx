@@ -39,6 +39,4 @@ function Viewer({ index }: { index: string }) {
       )}
     </Center>
   );
-}
-
 export default Viewer;

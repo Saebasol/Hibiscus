@@ -1,7 +1,9 @@
 import { Container } from '@chakra-ui/react';
 import * as React from 'react';
+import { Redirect, useParams } from 'react-router-dom';
 import api from './api';
 import Info from './Info';
+import Loading from './Loading';
 import type { heliotropeList, heliotropeInfo } from './types';
 
 const initInfo: heliotropeInfo = {
@@ -22,9 +24,11 @@ const List = () => {
   const { useState, useEffect } = React;
   const [info, setInfo] = useState<heliotropeInfo[]>([initInfo]);
   const [loading, setLoading] = useState(false);
-
+  const { id } = useParams<{id?: string}>();
+  
   const fetchHeliotropeList = async () => {
-    const response = await fetch(api + '/hitomi/list/1');
+    const response = await fetch(api + `/hitomi/list/${id}`);
+
     const heliotropeListResponse: heliotropeList = await response.json();
 
     const info = heliotropeListResponse.list;
@@ -34,13 +38,15 @@ const List = () => {
   };
 
   useEffect(() => {
-    fetchHeliotropeList();
-  }, []);
+    if (id){
+      fetchHeliotropeList();
+    }
+  }, [id]);
+
 
   return (
-    // 컨테이너 나중에 옮겨야함
     <Container w="100%" maxW={{ lg: '1140px' }} p={4}>
-      {loading ? info.map((e: heliotropeInfo) => <Info {...e} />) : '로딩중...'}
+      {loading ? info.map((e: heliotropeInfo) => <Info {...e} />) : <Loading/>}
     </Container>
   );
 };
