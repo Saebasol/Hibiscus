@@ -13,7 +13,7 @@ function HeliotropeTag({ tag }: { tag: heliotropeValueUrl }) {
   };
 
   return (
-    <Tag mr={1} mt={1} backgroundColor={tagColor(tag.value)}>
+    <Tag mr={1} mb={1} backgroundColor={tagColor(tag.value)}>
       <Text textColor="white">{tag.value}</Text>
     </Tag>
   );
