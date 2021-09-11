@@ -3,6 +3,16 @@ export interface heliotropeValueUrl {
   url: string;
 }
 
+export interface heliotropeImageInfo {
+  name: string;
+  url: string;
+}
+
+export interface heliotropeImageList {
+  status: number;
+  files: heliotropeImageInfo[];
+}
+
 interface heliotropeGalleryInfo {}
 
 export interface heliotropeInfo {
