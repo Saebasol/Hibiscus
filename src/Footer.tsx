@@ -12,10 +12,8 @@ import * as React from 'react';
 
 function Footer() {
   const { colorMode } = useColorMode();
-  const repo = (): Window | null =>
-    window.open('https://github.com/Saebasol/heliotrope-web', '__blank');
-  const discord = (): Window | null =>
-    window.open('https://discord.gg/PSshFYr', '__blank');
+  const repo = 'https://github.com/Saebasol/heliotrope-web';
+  const discord = 'https://discord.gg/PSshFYr';
   return (
     <Flex
       bg={
@@ -23,18 +21,26 @@ function Footer() {
           ? 'rgba(24, 30, 41, 255)'
           : 'rgba(240, 240, 240, 255)'
       }
-      padding='24px 0'
-      align='center'
-      justify='center'
+      padding="24px 0"
+      align="center"
+      justify="center"
     >
-      <Button variant="link" onClick={repo} style={{ textDecoration: 'none' }}>
+      <Button
+        as="a"
+        variant="link"
+        href={repo}
+        target="_blank"
+        style={{ textDecoration: 'none' }}
+      >
         <Icon as={FiGithub} mr={3} />
         <Text>Saebasol/heliotrope-web</Text>
       </Button>
       <Button
         ml={3}
+        as="a"
         variant="link"
-        onClick={discord}
+        href={discord}
+        target="_blank"
         style={{ textDecoration: 'none' }}
       >
         <Icon as={SiDiscord} mr={3} />
