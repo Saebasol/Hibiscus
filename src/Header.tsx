@@ -9,6 +9,7 @@ import {
   Icon,
   useColorMode,
   useMediaQuery,
+  Link,
 } from '@chakra-ui/react';
 import { MoonIcon, SunIcon, SearchIcon } from '@chakra-ui/icons';
 import { FiShuffle, FiLogIn } from 'react-icons/fi';
@@ -18,7 +19,6 @@ function Header() {
   const { colorMode, toggleColorMode } = useColorMode();
   const avatarURL =
     'https://avatars.githubusercontent.com/u/73676374?s=200&v=4';
-  const goToRoot = (): string => (window.location.href = '/');
   return (
     <Center
       bg={
@@ -30,19 +30,19 @@ function Header() {
       p={4}
       sx={{
         position: 'sticky',
-        top: '0'
+        top: '0',
       }}
     >
-      {textVisible ? (
-        <Button variant="ghost" onClick={goToRoot} mr={1}>
-          <Avatar size="sm" src={avatarURL} mr={2} />
-          {textVisible ? <Text fontSize="sm">Heliotrope-web</Text> : ''}
-        </Button>
-      ) : (
-        <Button variant="link" onClick={goToRoot}>
-          <Avatar size="sm" src={avatarURL} mr={2} />
-        </Button>
-      )}
+      <Button
+        as="a"
+        target="_blank"
+        href="/"
+        variant="ghost"
+        mr={textVisible ? 1 : 0}
+      >
+        <Avatar size="sm" src={avatarURL} mr={2} />
+        {textVisible ? <Text fontSize="sm">Heliotrope-web</Text> : ''}
+      </Button>
       <IconButton
         mr={1}
         variant="ghost"
