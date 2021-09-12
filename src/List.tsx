@@ -24,8 +24,8 @@ const List = () => {
   const { useState, useEffect } = React;
   const [info, setInfo] = useState<heliotropeInfo[]>([initInfo]);
   const [loading, setLoading] = useState(false);
-  const { id } = useParams<{id?: string}>();
-  
+  const { id } = useParams<{ id?: string }>();
+
   const fetchHeliotropeList = async () => {
     const response = await fetch(api + `/hitomi/list/${id}`);
 
@@ -38,15 +38,14 @@ const List = () => {
   };
 
   useEffect(() => {
-    if (id){
+    if (id) {
       fetchHeliotropeList();
     }
   }, [id]);
 
-
   return (
     <Container w="100%" maxW={{ lg: '1140px' }} p={4}>
-      {loading ? info.map((e: heliotropeInfo) => <Info {...e} />) : <Loading/>}
+      {loading ? info.map((e: heliotropeInfo) => <Info {...e} />) : <Loading />}
     </Container>
   );
 };
