@@ -2,7 +2,7 @@ import * as Chakra from '@chakra-ui/react';
 import * as React from 'react';
 import type { heliotropeInfo, heliotropeValueUrl } from './types';
 import HeliotropeTag from './HeliotropeTag';
-
+import { Link as RouterLink } from 'react-router-dom';
 const tagMapping: Record<string, string> = {
   artist: '작가',
   group: '그룹',
@@ -15,7 +15,7 @@ const Info = (info: heliotropeInfo) => {
   const { Text, Box, Center, Image, Link } = Chakra;
 
   const tagFields: JSX.Element[] = [];
-
+  const tagBadges: JSX.Element[] = [];
   // key, value로 나눠서 매핑된거 찾고 값있을때에만 넣기
   Object.entries(info).forEach(([tagName, tagValue]) => {
     if (Object.keys(tagMapping).includes(tagName) && !!tagValue?.length) {
@@ -26,9 +26,14 @@ const Info = (info: heliotropeInfo) => {
           {(tagValue as heliotropeValueUrl[]).map((e) => e.value).join(', ')}
         </Text>,
       );
-    } else if (tagName === 'tags') {
+    } else if (tagName === 'tags' && 0 < tagValue?.length) {
+      tagBadges.push(
+        <Text style={{ display: 'unset' }} mr={1} color="gray.500">
+          태그:
+        </Text>,
+      );
       (tagValue as heliotropeValueUrl[]).map((tag) => {
-        tagFields.push(<HeliotropeTag tag={tag} />);
+        tagBadges.push(<HeliotropeTag tag={tag} />);
       });
     }
   });
@@ -53,24 +58,24 @@ const Info = (info: heliotropeInfo) => {
           maxH="300px"
           width={{ md: 40 }}
           alt="thumbnail"
-          // src={info.thumbnail}
+          src={info.thumbnail}
         />
       </Center>
       <Box mt={{ base: 4, md: 0 }} ml={{ md: 6 }}>
         <Link
           mt={1}
+          as={RouterLink}
           display="block"
           fontSize="lg"
           lineHeight="normal"
           fontWeight="semibold"
-          // 여기에 reader 리다이렉트
-          href="#"
+          to={`/viewer/${info.index}`}
           style={{ textDecorationLine: 'none' }}
         >
-          <Text textSize="3xl">{info.title}</Text>
+          <Text fontSize="xl">{info.title}</Text>
         </Link>
-        {/* <Text>태그: </Text> * #수정필요함 */} 
         {...tagFields}
+        <Box mt={1}>{...tagBadges}</Box>
       </Box>
     </Box>
   );

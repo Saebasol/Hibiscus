@@ -27,7 +27,6 @@ const List = () => {
   const [total, setTotal] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const { id } = useParams<{id?: string}>();
-  
   const fetchHeliotropeList = async () => {
     setLoading(true);
     const response = await fetch(api + `/hitomi/list/${id}`);
@@ -43,11 +42,10 @@ const List = () => {
   };
 
   useEffect(() => {
-    if (id){
+    if (id) {
       fetchHeliotropeList();
     }
   }, [id]);
-
 
   return (
     <>
