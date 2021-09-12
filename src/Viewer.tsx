@@ -1,12 +1,17 @@
 import * as React from 'react';
 import * as Chakra from '@chakra-ui/react';
 import api from './api';
+import * as ReactRouterDom from 'react-router-dom';
 import type { heliotropeImageInfo, heliotropeImageList } from './types';
 import { Center } from '@chakra-ui/react';
-// TODO: 가로 채우기, 세로 채우기, 스크롤, 펼쳐보기 설정, 뷰어 헤더 구현, Lazy loading 구현
-function Viewer({ index }: { index: string }) {
-  const { Flex, Box, Spinner, Image } = Chakra;
+import Loading from './Loading';
+// TODO: 가로 채우기, 스크롤, 페이지 보기 설정, 뷰어 헤더 구현, Lazy loading 구현
+// COMPLETE: 세로 채우기
+function Viewer() {
   const { useEffect, useState } = React;
+  const { Box, Image } = Chakra;
+  const { useParams } = ReactRouterDom;
+  const { index } = useParams<{ index: string }>();
   const [loading, setLoading] = useState(true);
   const [images, setImages] = useState<heliotropeImageInfo[]>([]);
   const fetchImages = async (): Promise<void> => {
@@ -19,11 +24,12 @@ function Viewer({ index }: { index: string }) {
   useEffect(() => {
     fetchImages();
   }, []);
+  const fillVertical = { maxWidth: '100%', maxHeight:'100vh', marginLeft: 'auto', marginRight: 'auto' }
   const imageElements = images.map((e, index) => (
     <Image
       key={index}
-      loading='lazy'
-      style={{ width: '50%', marginLeft: 'auto', marginRight: 'auto' }}
+      loading="lazy"
+      style={fillVertical}
       m={0}
       src={'https://heliotrope.me/v5/api/proxy/' + e.url}
     />
@@ -31,13 +37,7 @@ function Viewer({ index }: { index: string }) {
   //   align-items: center;
   //   justify-content: center;
   return (
-    <Center>
-      {loading ? (
-        <Spinner />
-      ) : (
-        <Box>{[...imageElements]}</Box>
-      )}
-    </Center>
+    <Center>{loading ? <Loading /> : <Box>{[...imageElements]}</Box>}</Center>
   );
 }
 
