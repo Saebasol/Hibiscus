@@ -4,6 +4,7 @@ import { Redirect, useParams } from 'react-router-dom';
 import api from './api';
 import Info from './Info';
 import Loading from './Loading';
+import Pagenation from './Pagination';
 import type { heliotropeList, heliotropeInfo } from './types';
 
 const initInfo: heliotropeInfo = {
@@ -23,18 +24,22 @@ const initInfo: heliotropeInfo = {
 const List = () => {
   const { useState, useEffect } = React;
   const [info, setInfo] = useState<heliotropeInfo[]>([initInfo]);
-  const [loading, setLoading] = useState(false);
+  const [total, setTotal] = useState<number>(0);
+  const [loading, setLoading] = useState(true);
   const { id } = useParams<{id?: string}>();
   
   const fetchHeliotropeList = async () => {
+    setLoading(true);
     const response = await fetch(api + `/hitomi/list/${id}`);
 
     const heliotropeListResponse: heliotropeList = await response.json();
 
     const info = heliotropeListResponse.list;
+    const total = heliotropeListResponse.total;
 
+    setTotal(total);
     setInfo(info);
-    setLoading(true);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -45,10 +50,13 @@ const List = () => {
 
 
   return (
-    <Container w="100%" maxW={{ lg: '1140px' }} p={4}>
-      {loading ? info.map((e: heliotropeInfo) => <Info {...e} />) : <Loading/>}
-    </Container>
-  );
-};
+    <>
+      <Container w="100%" maxW={{ lg: '1140px' }} p={4}>
+          {loading ? <Loading/> : info.map((e: heliotropeInfo) => <Info {...e} />)}
+      </Container>
+      <Pagenation currentPage={Number(id)} total={total} />
+    </>
+  )
+}
 
 export default List;
