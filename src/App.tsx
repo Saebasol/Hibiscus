@@ -10,7 +10,6 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link,
   Redirect,
 } from 'react-router-dom';
 import HFContainer from './HFContainer';
