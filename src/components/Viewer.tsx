@@ -1,8 +1,8 @@
 import * as React from 'react';
 import * as Chakra from '@chakra-ui/react';
-import api from './api';
+import api from '../api';
 import * as ReactRouterDom from 'react-router-dom';
-import type { heliotropeImageInfo, heliotropeImageList } from './types';
+import type { heliotropeImageInfo, heliotropeImageList } from '../types';
 import { Center } from '@chakra-ui/react';
 import Loading from './Loading';
 // TODO: 가로 채우기, 스크롤, 페이지 보기 설정, 뷰어 헤더 구현, Lazy loading 구현
@@ -24,7 +24,12 @@ function Viewer() {
   useEffect(() => {
     fetchImages();
   }, []);
-  const fillVertical = { maxWidth: '100%', maxHeight:'100vh', marginLeft: 'auto', marginRight: 'auto' }
+  const fillVertical = {
+    maxWidth: '100%',
+    maxHeight: '100vh',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+  };
   const imageElements = images.map((e, index) => (
     <Image
       key={index}

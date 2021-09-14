@@ -1,6 +1,6 @@
 import * as Chakra from '@chakra-ui/react';
 import * as React from 'react';
-import type { heliotropeInfo, heliotropeValueUrl } from './types';
+import type { heliotropeInfo, heliotropeValueUrl } from '../types';
 import HeliotropeTag from './HeliotropeTag';
 import { Link as RouterLink } from 'react-router-dom';
 const tagMapping: Record<string, string> = {

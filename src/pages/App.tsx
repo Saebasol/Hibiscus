@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { ChakraProvider } from '@chakra-ui/react';
-import Header from './Header';
-import Footer from './Footer';
-import theme from './theme';
+import theme from '../theme';
 import List from './List';
 import Login from './Login';
 
@@ -12,8 +10,8 @@ import {
   Route,
   Redirect,
 } from 'react-router-dom';
-import HFContainer from './HFContainer';
-import Viewer from './Viewer';
+import HFContainer from '../components/HFContainer';
+import Viewer from '../components/Viewer';
 
 function App() {
   return (

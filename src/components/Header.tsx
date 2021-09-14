@@ -9,7 +9,6 @@ import {
   Icon,
   useColorMode,
   useMediaQuery,
-  Link,
 } from '@chakra-ui/react';
 import { MoonIcon, SunIcon, SearchIcon } from '@chakra-ui/icons';
 import { FiShuffle, FiLogIn } from 'react-icons/fi';

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import type { heliotropeValueUrl } from './types';
+import type { heliotropeValueUrl } from '../types';
 import * as Chakra from '@chakra-ui/react';
 
 function HeliotropeTag({ tag }: { tag: heliotropeValueUrl }) {
