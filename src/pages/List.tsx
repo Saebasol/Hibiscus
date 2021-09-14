@@ -1,11 +1,11 @@
 import { Container } from '@chakra-ui/react';
 import * as React from 'react';
-import { Redirect, useParams } from 'react-router-dom';
-import api from './api';
-import Info from './Info';
-import Loading from './Loading';
-import Pagenation from './Pagination';
-import type { heliotropeList, heliotropeInfo } from './types';
+import { useParams } from 'react-router-dom';
+import api from '../api';
+import Info from '../components/Info';
+import Loading from '../components/Loading';
+import Pagenation from '../components/Pagination';
+import type { heliotropeList, heliotropeInfo } from '../types';
 
 const initInfo: heliotropeInfo = {
   index: '1',
