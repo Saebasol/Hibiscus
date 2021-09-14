@@ -26,7 +26,7 @@ const List = () => {
   const [info, setInfo] = useState<heliotropeInfo[]>([initInfo]);
   const [total, setTotal] = useState<number>(0);
   const [loading, setLoading] = useState(true);
-  const { id } = useParams<{id?: string}>();
+  const { id } = useParams<{ id?: string }>();
   const fetchHeliotropeList = async () => {
     setLoading(true);
     const response = await fetch(api + `/hitomi/list/${id}`);
@@ -50,11 +50,15 @@ const List = () => {
   return (
     <>
       <Container w="100%" maxW={{ lg: '1140px' }} p={4}>
-          {loading ? <Loading/> : info.map((e: heliotropeInfo) => <Info {...e} />)}
+        {loading ? (
+          <Loading />
+        ) : (
+          info.map((e: heliotropeInfo) => <Info {...e} />)
+        )}
       </Container>
       <Pagenation currentPage={Number(id)} total={total} />
     </>
-  )
-}
+  );
+};
 
 export default List;

@@ -24,7 +24,12 @@ function Viewer() {
   useEffect(() => {
     fetchImages();
   }, []);
-  const fillVertical = { maxWidth: '100%', maxHeight:'100vh', marginLeft: 'auto', marginRight: 'auto' }
+  const fillVertical = {
+    maxWidth: '100%',
+    maxHeight: '100vh',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+  };
   const imageElements = images.map((e, index) => (
     <Image
       key={index}
