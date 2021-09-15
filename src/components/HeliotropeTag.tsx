@@ -2,7 +2,7 @@ import * as React from 'react';
 import type { heliotropeValueUrl } from '../types';
 import * as Chakra from '@chakra-ui/react';
 
-function HeliotropeTag({ tag }: { tag: heliotropeValueUrl }) {
+const HeliotropeTag = ({ tag }: { tag: heliotropeValueUrl }) => {
   const { Tag, Text } = Chakra;
   const tagColor = (text: string): string => {
     return text.includes('♂')

@@ -10,7 +10,7 @@ import { FiGithub } from 'react-icons/fi';
 import { SiDiscord } from 'react-icons/si';
 import * as React from 'react';
 
-function Footer() {
+const Footer = () => {
   const { colorMode } = useColorMode();
   const repo = 'https://github.com/Saebasol/heliotrope-web';
   const discord = 'https://discord.gg/PSshFYr';

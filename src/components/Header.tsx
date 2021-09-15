@@ -13,7 +13,7 @@ import {
 import { MoonIcon, SunIcon, SearchIcon } from '@chakra-ui/icons';
 import { FiShuffle, FiLogIn } from 'react-icons/fi';
 
-function Header() {
+const Header = () => {
   const [textVisible] = useMediaQuery('(min-width: 720px)');
   const { colorMode, toggleColorMode } = useColorMode();
   const avatarURL =
