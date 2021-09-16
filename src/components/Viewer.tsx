@@ -7,7 +7,7 @@ import { Center } from '@chakra-ui/react';
 import Loading from './Loading';
 // TODO: 가로 채우기, 스크롤, 페이지 보기 설정, 뷰어 헤더 구현, Lazy loading 구현
 // COMPLETE: 세로 채우기
-function Viewer() {
+const Viewer = () => {
   const { useEffect, useState } = React;
   const { Box, Image } = Chakra;
   const { useParams } = ReactRouterDom;
