@@ -139,7 +139,7 @@ const Pagination = ({
     <ButtonGroup
       p={4}
       isAttached
-      size="md"
+      size="sm"
       variant="outline"
       display="flex"
       alignItems="center"
