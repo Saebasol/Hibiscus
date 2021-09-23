@@ -4,6 +4,7 @@ import api from '../api';
 import * as ReactRouterDom from 'react-router-dom';
 import type { heliotropeImageInfo, heliotropeImageList } from '../types';
 import { Center } from '@chakra-ui/react';
+import LazyViewerImage  from './LazyLoadingImage';
 import Loading from './Loading';
 // TODO: 가로 채우기, 스크롤, 페이지 보기 설정, 뷰어 헤더 구현, Lazy loading 구현
 // COMPLETE: 세로 채우기
@@ -36,13 +37,16 @@ const Viewer = () => {
       loading="lazy"
       style={fillVertical}
       m={0}
-      src={'https://heliotrope.me/v5/api/proxy/' + e.url}
+      src={api+'/proxy/' + e.url}
     />
   ));
   //   align-items: center;
   //   justify-content: center;
   return (
+    <>
+    {/* <LazyViewerImage /> */}
     <Center>{loading ? <Loading /> : <Box>{[...imageElements]}</Box>}</Center>
+    </>
   );
 }
 
