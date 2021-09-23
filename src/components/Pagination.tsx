@@ -147,7 +147,7 @@ const Pagination = ({
     >
       <PreviousButton digit={digit} />
       {range(startAt, endAt).map((i) => (
-        <LinkButton currentPage={currentPage} page={i} />
+        <LinkButton key={currentPage + i} currentPage={currentPage} page={i} />
       ))}
       <NextButton total={total} digit={digit} />
     </ButtonGroup>

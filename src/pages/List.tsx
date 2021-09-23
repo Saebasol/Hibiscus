@@ -53,7 +53,9 @@ const List = () => {
         {loading ? (
           <Loading />
         ) : (
-          info.map((e: heliotropeInfo) => <Info {...e} />)
+          info.map((e: heliotropeInfo, index: number) => (
+            <Info key={index} {...e} />
+          ))
         )}
       </Container>
       <Pagenation currentPage={Number(id)} total={total} />
