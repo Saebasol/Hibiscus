@@ -109,6 +109,7 @@ const NextButton = ({ total, digit }: { total: number; digit: number }) => {
       <IconButton
         aria-label="next"
         borderLeftRadius="sm"
+        size="sm"
         icon={<ArrowRightIcon />}
         isDisabled
       />
@@ -136,21 +137,20 @@ const Pagination = ({
   }
 
   return (
-    <ButtonGroup
-      p={4}
-      isAttached
-      size="sm"
-      variant="outline"
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-    >
-      <PreviousButton digit={digit} />
-      {range(startAt, endAt).map((i) => (
-        <LinkButton currentPage={currentPage} page={i} />
-      ))}
-      <NextButton total={total} digit={digit} />
-    </ButtonGroup>
+    <nav style={{display: "block", width:"100%", overflowX:"auto"}}>
+      <ButtonGroup
+        isAttached
+        variant="outline"
+        size="sm"
+        p={4}
+      >
+        <PreviousButton digit={digit} />
+        {range(startAt, endAt).map((i) => (
+          <LinkButton currentPage={currentPage} page={i} />
+        ))}
+        <NextButton total={total} digit={digit} />
+      </ButtonGroup>
+    </nav>
   );
 };
 
