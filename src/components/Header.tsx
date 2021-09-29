@@ -67,6 +67,6 @@ const Header = () => {
       </IconButton>
     </Center>
   );
-}
+};
 
 export default Header;

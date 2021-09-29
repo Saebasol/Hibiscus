@@ -17,6 +17,6 @@ const HeliotropeTag = ({ tag }: { tag: heliotropeValueUrl }) => {
       <Text textColor="white">{tag.value}</Text>
     </Tag>
   );
-}
+};
 
 export default HeliotropeTag;

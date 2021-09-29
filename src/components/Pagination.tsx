@@ -137,13 +137,8 @@ const Pagination = ({
   }
 
   return (
-    <nav style={{display: "block", width:"100%", overflowX:"auto"}}>
-      <ButtonGroup
-        isAttached
-        variant="outline"
-        size="sm"
-        p={4}
-      >
+    <nav style={{ display: 'block', width: '100%', overflowX: 'auto' }}>
+      <ButtonGroup isAttached variant="outline" size="sm" p={4}>
         <PreviousButton digit={digit} />
         {range(startAt, endAt).map((i) => (
           <LinkButton currentPage={currentPage} page={i} />

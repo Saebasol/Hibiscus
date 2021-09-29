@@ -21,19 +21,24 @@ const Info = (info: heliotropeInfo) => {
     if (Object.keys(tagMapping).includes(tagName) && !!tagValue?.length) {
       const tag = tagMapping[tagName];
       tagFields.push(
-        <Text mt={2} color="gray.500">
+        <Text key={tag} mt={2} color="gray.500">
           {tag}:{' '}
           {(tagValue as heliotropeValueUrl[]).map((e) => e.value).join(', ')}
         </Text>,
       );
     } else if (tagName === 'tags' && 0 < tagValue?.length) {
       tagBadges.push(
-        <Text style={{ display: 'unset' }} mr={1} color="gray.500">
+        <Text
+          key={'tagName'}
+          style={{ display: 'unset' }}
+          mr={1}
+          color="gray.500"
+        >
           태그:
         </Text>,
       );
       (tagValue as heliotropeValueUrl[]).map((tag) => {
-        tagBadges.push(<HeliotropeTag tag={tag} />);
+        tagBadges.push(<HeliotropeTag key={tag.value} tag={tag} />);
       });
     }
   });
