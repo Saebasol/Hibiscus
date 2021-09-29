@@ -1,8 +1,6 @@
 import {
   Button,
   ButtonGroup,
-  ButtonProps,
-  Flex,
   IconButton,
 } from '@chakra-ui/react';
 import * as React from 'react';
@@ -141,7 +139,7 @@ const Pagination = ({
       <ButtonGroup isAttached variant="outline" size="sm" p={4}>
         <PreviousButton digit={digit} />
         {range(startAt, endAt).map((i) => (
-          <LinkButton currentPage={currentPage} page={i} />
+          <LinkButton currentPage={currentPage} page={i} key={`${currentPage}-${i}`}/>
         ))}
         <NextButton total={total} digit={digit} />
       </ButtonGroup>
