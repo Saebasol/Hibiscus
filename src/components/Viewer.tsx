@@ -32,7 +32,7 @@ const Viewer = () => {
 
   useEffect(() => {
     fetchImages();
-  }, [ ]);
+  }, []);
 
   const fillVertical = {
     maxWidth: '100%',

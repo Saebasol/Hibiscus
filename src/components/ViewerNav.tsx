@@ -31,7 +31,7 @@ const Viewer = ({ setVertical, isVertical, index }: IProps) => {
     bottom: 0,
     minHeight: '5vh',
   };
-  
+
   const toggleVertical = () => {
     setVertical(!isVertical);
   };
@@ -45,7 +45,11 @@ const Viewer = ({ setVertical, isVertical, index }: IProps) => {
   }, []);
 
   return (
-    <Center w="100%" style={ViewerNavCSS} bg={colorMode === 'dark' ? 'blackAlpha.800' : 'whiteAlpha.800'}>
+    <Center
+      w="100%"
+      style={ViewerNavCSS}
+      bg={colorMode === 'dark' ? 'blackAlpha.800' : 'whiteAlpha.800'}
+    >
       <Text ml={4}>{hitomiInfo?.title}</Text>
       <Spacer />
       <IconButton
