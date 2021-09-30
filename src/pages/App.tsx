@@ -12,6 +12,7 @@ import {
 } from 'react-router-dom';
 import HFContainer from '../components/HFContainer';
 import Viewer from './Viewer';
+import Download from './Download'
 
 function App() {
   return (
@@ -30,6 +31,13 @@ function App() {
           </Route>
           <Route exact path="/viewer/:id">
             <Viewer />
+          </Route>
+
+          <Route exact path="/download">
+            <Redirect to="/list/1" />
+          </Route>
+          <Route exact path="/download/:id">
+            <Download />
           </Route>
 
           <Route path="/login" exact component={Login} />
