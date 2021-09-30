@@ -4,9 +4,9 @@ import api from '../api';
 import * as ReactRouterDom from 'react-router-dom';
 import type { heliotropeImageInfo, heliotropeImageList } from '../types';
 import { Center } from '@chakra-ui/react';
-import LazyViewerImage from './LazyViewerImage';
-import ViewerNav from './ViewerNav';
-import Loading from './Loading';
+import LazyViewerImage from '../components/LazyViewerImage';
+import ViewerNav from '../components/ViewerNav';
+import Loading from '../components/Loading';
 // TODO: 스크롤, 페이지 보기 설정
 // WIP: 뷰어 헤더 구현, Lazy loading 구현
 // Lazyloading 컴포넌트마다 IntersectionObserver 인스턴스가 생성됨. Viewer컴포넌트에서 관리하도록 바꿀 필요 있음
