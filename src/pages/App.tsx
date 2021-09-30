@@ -11,7 +11,7 @@ import {
   Redirect,
 } from 'react-router-dom';
 import HFContainer from '../components/HFContainer';
-import Viewer from '../components/Viewer';
+import Viewer from './Viewer';
 
 function App() {
   return (
@@ -24,12 +24,14 @@ function App() {
           <Route exact path="/list/:id">
             <HFContainer children={<List />} />
           </Route>
+
           <Route exact path="/viewer">
             <Redirect to="/list/1" />
           </Route>
-          <Route exact path="/viewer/:index">
+          <Route exact path="/viewer/:id">
             <Viewer />
           </Route>
+
           <Route path="/login" exact component={Login} />
         </Switch>
       </ChakraProvider>
