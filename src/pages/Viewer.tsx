@@ -16,14 +16,14 @@ const Viewer = () => {
   const { Box } = Chakra;
   const { useParams } = ReactRouterDom;
 
-  const { index } = useParams<{ index: string }>();
+  const { id } = useParams<{ id: string }>();
 
   const [isVertical, setVertical] = useState<boolean>(true);
   const [loading, setLoading] = useState(true);
   const [images, setImages] = useState<heliotropeImageInfo[]>([]);
 
   const fetchImages = async (): Promise<void> => {
-    const response = await fetch(api + '/hitomi/images/' + index);
+    const response = await fetch(api + '/hitomi/images/' + id);
     const heliotropeFiles: heliotropeImageList = await response.json();
     setImages(heliotropeFiles.files);
     setLoading(false);
@@ -60,7 +60,7 @@ const Viewer = () => {
       <ViewerNav
         setVertical={setVertical}
         isVertical={isVertical}
-        index={index}
+        index={id}
       />
       {loading ? <Loading /> : <Box>{[...imageElements]}</Box>}
     </Center>
