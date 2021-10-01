@@ -57,11 +57,7 @@ const Viewer = () => {
   ));
   return (
     <Center m={0}>
-      <ViewerNav
-        setVertical={setVertical}
-        isVertical={isVertical}
-        index={id}
-      />
+      <ViewerNav setVertical={setVertical} isVertical={isVertical} index={id} />
       {loading ? <Loading /> : <Box>{[...imageElements]}</Box>}
     </Center>
   );

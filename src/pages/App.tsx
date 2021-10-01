@@ -12,7 +12,7 @@ import {
 } from 'react-router-dom';
 import HFContainer from '../components/HFContainer';
 import Viewer from './Viewer';
-import Download from './Download'
+import Download from './Download';
 
 function App() {
   return (
