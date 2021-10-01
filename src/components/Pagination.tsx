@@ -1,8 +1,4 @@
-import {
-  Button,
-  ButtonGroup,
-  IconButton,
-} from '@chakra-ui/react';
+import { Button, ButtonGroup, IconButton } from '@chakra-ui/react';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeftIcon, ArrowRightIcon } from '@chakra-ui/icons';
@@ -139,7 +135,11 @@ const Pagination = ({
       <ButtonGroup isAttached variant="outline" size="sm" p={4}>
         <PreviousButton digit={digit} />
         {range(startAt, endAt).map((i) => (
-          <LinkButton currentPage={currentPage} page={i} key={`${currentPage}-${i}`}/>
+          <LinkButton
+            currentPage={currentPage}
+            page={i}
+            key={`${currentPage}-${i}`}
+          />
         ))}
         <NextButton total={total} digit={digit} />
       </ButtonGroup>
