@@ -1,7 +1,6 @@
 // Reference: https://github.com/Saebasol/lily/blob/develop/src/App.jsx
 import * as React from 'react';
 import { useParams } from 'react-router';
-import JSZip from 'jszip';
 import { Progress, Flex, Heading, Text } from '@chakra-ui/react';
 import { saveAs } from 'file-saver';
 import api from '../api';
