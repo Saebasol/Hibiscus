@@ -1,4 +1,5 @@
 import * as Chakra from '@chakra-ui/react';
+import { ArrowDownIcon } from '@chakra-ui/icons';
 import * as React from 'react';
 import type { heliotropeInfo, heliotropeValueUrl } from '../types';
 import HeliotropeTag from './HeliotropeTag';
@@ -12,10 +13,10 @@ const tagMapping: Record<string, string> = {
 };
 
 const Info = (info: heliotropeInfo) => {
-  const { Text, Box, Center, Image, Link } = Chakra;
+  const { Text, Box, Center, Image, Link, IconButton } = Chakra;
 
   const tagFields: JSX.Element[] = [];
-  const tagBadges: JSX.Element[] = [];
+  let tagBadges: JSX.Element;
   // key, value로 나눠서 매핑된거 찾고 값있을때에만 넣기
   Object.entries(info).forEach(([tagName, tagValue]) => {
     if (Object.keys(tagMapping).includes(tagName) && !!tagValue?.length) {
@@ -27,19 +28,18 @@ const Info = (info: heliotropeInfo) => {
         </Text>,
       );
     } else if (tagName === 'tags' && 0 < tagValue?.length) {
-      tagBadges.push(
+      tagFields.push(
         <Text
           key={'tagName'}
-          style={{ display: 'unset' }}
-          mr={1}
+          mt={2}
           color="gray.500"
         >
-          태그:
+          태그:{' '}
+          {(tagValue as heliotropeValueUrl[]).map((tag) => {
+            return <HeliotropeTag key={tag.value} tag={tag} />;
+          })}
         </Text>,
       );
-      (tagValue as heliotropeValueUrl[]).map((tag) => {
-        tagBadges.push(<HeliotropeTag key={tag.value} tag={tag} />);
-      });
     }
   });
 
@@ -80,7 +80,16 @@ const Info = (info: heliotropeInfo) => {
           <Text fontSize="xl">{info.title}</Text>
         </Link>
         {...tagFields}
-        <Box mt={1}>{...tagBadges}</Box>
+        <IconButton
+          aria-label="download"
+          mt={1}
+          mb={3}
+          as="a"
+          style={{ position: 'unset', bottom: 0 }}
+          target="_blank"
+          href={`/download/${info.index}`}
+          icon={<ArrowDownIcon />}
+        ></IconButton>
       </Box>
     </Box>
   );
