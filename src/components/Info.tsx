@@ -13,7 +13,7 @@ const tagMapping: Record<string, string> = {
 };
 
 const Info = (info: heliotropeInfo) => {
-  const { Text, Box, Center, Image, Link, IconButton } = Chakra;
+  const { Text, Box, Center, Image, Link, Button } = Chakra;
 
   const tagFields: JSX.Element[] = [];
   let tagBadges: JSX.Element;
@@ -80,16 +80,18 @@ const Info = (info: heliotropeInfo) => {
           <Text fontSize="xl">{info.title}</Text>
         </Link>
         {...tagFields}
-        <IconButton
+        <Button
           aria-label="download"
           mt={1}
           mb={3}
           as="a"
-          style={{ position: 'unset', bottom: 0 }}
+          style={{ position: 'unset' }}
           target="_blank"
           href={`/download/${info.index}`}
-          icon={<ArrowDownIcon />}
-        ></IconButton>
+        >
+          <Text fontSize='sm' color='gray.400'>다운로드</Text>
+          <ArrowDownIcon color='gray.400' ml={1} />
+        </Button>
       </Box>
     </Box>
   );
