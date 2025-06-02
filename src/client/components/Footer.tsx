@@ -1,4 +1,136 @@
-import { Box, Container, Flex, Heading, Link, Separator, Text } from '@radix-ui/themes'
+import { Box, Container, Flex, Heading, Link, Separator, Text, Grid } from '@radix-ui/themes'
+import { DiscordLogoIcon, GitHubLogoIcon } from '@radix-ui/react-icons'
+
+const FooterMain = () => {
+  return (
+    <Box>
+      <Heading size="4" mb="2">
+        Hibiscus
+      </Heading>
+      <Text size="2" color="gray">
+        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+      </Text>
+    </Box>
+  )
+}
+
+const FooterLinkSupport = () => {
+  return (
+    <Box>
+      <Heading size="3" mb="2">
+        Support
+      </Heading>
+      <Flex direction="column" gap="1">
+        <Link size="2" color="gray" href="#">Report Issues</Link>
+      </Flex>
+    </Box>
+  )
+}
+
+const FooterLinkResources = () => {
+  return (
+    <Box>
+      <Heading size="3" mb="2">
+        Resources
+      </Heading>
+      <Flex direction="column" gap="1">
+        <Link size="2" color="gray" href="#">Self-Hosting Guide</Link>
+      </Flex>
+    </Box>
+  )
+}
+
+
+
+
+const FooterLinkCommunity = () => {
+  return (
+    <Box>
+      <Heading size="3" mb="2">
+        Community
+      </Heading>
+      <Link size="2" color="gray" href="#">Changelog</Link>
+      <Flex direction="column" gap="1">
+        <Link size="2" color="gray" href="#" style={{ display: 'flex', alignItems: 'center' }}>
+          <DiscordLogoIcon style={{ marginRight: '6px' }} />
+          Discord
+        </Link>
+      </Flex>
+    </Box>
+  )
+}
+
+const FooterLinkOpenSource = () => {
+  return (
+    <Box>
+      <Heading size="3" mb="2">
+        Open Source
+      </Heading>
+      <Flex direction="column" gap="1">
+        <Link size="2" color="gray" href="#" style={{ display: 'flex', alignItems: 'center' }}>
+          <GitHubLogoIcon style={{ marginRight: '6px' }} />
+          Heliotrope
+        </Link>
+        <Link size="2" color="gray" href="#" style={{ display: 'flex', alignItems: 'center' }}>
+          <GitHubLogoIcon style={{ marginRight: '6px' }} />
+          Hibiscus
+        </Link>
+      </Flex>
+    </Box>
+  )
+}
+
+
+const FooterLink = () => {
+  return (
+    <Grid
+      columns={{ initial: '2', sm: '4' }}
+      gap="4"
+      width="100%"
+      style={{ maxWidth: '600px' }}
+    >
+      <FooterLinkSupport />
+      <FooterLinkResources />
+      <FooterLinkOpenSource />
+      <FooterLinkCommunity />
+    </Grid>
+  )
+}
+
+const FooterText = () => {
+  return (
+    <Flex
+      justify="between"
+      align="center"
+      direction={{ initial: 'column', sm: 'row' }}
+      gap="2"
+    >
+      <Flex
+        direction="column"
+        gap="1"
+        align={{ initial: 'center', sm: 'start' }}
+      >
+        <Text size="1" color="gray" >
+          Made with ❤️ by Saebasol
+        </Text>
+        <Text size="1" color="gray">
+          Powered by&nbsp;
+          <Link href="https://radix-ui.com" target="_blank" rel="noopener noreferrer">Radix UI</Link>&nbsp;&&nbsp;
+          <Link href="https://vitejs.dev" target="_blank" rel="noopener noreferrer">Vite</Link>&nbsp;&&nbsp;
+          <Link href="https://react.dev" target="_blank" rel="noopener noreferrer">React</Link>&nbsp;&&nbsp;
+          <Link href="https://fastify.dev" target="_blank" rel="noopener noreferrer">Fastify</Link>
+        </Text>
+
+      </Flex>
+
+
+      <Text size="1" color="gray">
+        0.1.0
+      </Text>
+
+    </Flex >
+  )
+}
 
 const Footer = () => {
   return (
@@ -17,67 +149,12 @@ const Footer = () => {
             gap="6"
             direction={{ initial: 'column', sm: 'row' }}
           >
-            <Box>
-              <Heading size="4" mb="2">
-                Hibiscus
-              </Heading>
-              <Text size="2" color="gray">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              </Text>
-            </Box>
-
-            <Flex gap="6" direction={{ initial: 'column', sm: 'row' }}>
-              <Flex gap="6" direction={{ initial: 'row' }}>
-                <Box>
-                  <Heading size="3" mb="2">
-                    Terms
-                  </Heading>
-                  <Flex direction="column" gap="1">
-                    <Link size="2" color="gray" href="#">Terms and Conditions</Link>
-                    <Link size="2" color="gray" href="#">Privacy Policy</Link>
-                    <Link size="2" color="gray" href="#">Legal</Link>
-                  </Flex>
-                </Box>
-                <Box>
-                  <Heading size="3" mb="2">
-                    Support
-                  </Heading>
-                  <Flex direction="column" gap="1">
-                    <Link size="2" color="gray" href="#">Report Issues</Link>
-                    <Link size="2" color="gray" href="#">Copyright Claim</Link>
-                  </Flex>
-                </Box>
-              </Flex>
-
-              <Flex gap="6">
-                <Box>
-                  <Heading size="3" mb="2">
-                    Community
-                  </Heading>
-                  <Flex direction="column" gap="1">
-                    <Link size="2" color="gray" href="#">Discord</Link>
-                    <Link size="2" color="gray" href="#">Announcements</Link>
-                  </Flex>
-                </Box>
-              </Flex>
-            </Flex>
+            <FooterMain />
+            <FooterLink />
           </Flex>
 
           <Separator size="4" />
-
-          <Flex
-            justify="between"
-            align="center"
-            direction={{ initial: 'column', sm: 'row' }}
-            gap="2"
-          >
-            <Text size="1" color="gray">
-              This site does not store any files on its server. All contents are provided by third parties.
-            </Text>
-            <Text size="1" color="gray">
-              Made with ❤️ by Saebasol
-            </Text>
-          </Flex>
+          <FooterText />
         </Flex>
       </Container>
     </Box>
