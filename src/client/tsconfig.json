@@ -1,0 +1,30 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "jsx": "react-jsx",
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "noEmit": true,
+    "target": "ES2023",
+    "types": [
+      "vite/client"
+    ],
+    "baseUrl": "../../",
+    "paths": {
+      "$app/*": [
+        "./src/client/*",
+        "./node_modules/@fastify/react/virtual-ts/*"
+      ]
+    }
+  },
+  "include": [
+    "**/*"
+  ],
+  "exclude": []
+}
