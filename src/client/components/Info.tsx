@@ -1,0 +1,227 @@
+import { Box, Card, Text, Flex, Badge, Separator, Strong, Heading } from "@radix-ui/themes"
+import { CalendarIcon, PersonIcon } from "@radix-ui/react-icons"
+import type HeliotropeInfo from "$app/types/HeliotropeInfo"
+
+
+const GroupIcon = () => {
+  return (
+    <svg width="15" height="15" viewBox="0 0 15 15" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M1.25 13.75C1.25 10.9886 3.48858 8.75 6.25 8.75C9.01142 8.75 11.25 10.9886 11.25 13.75H10C10 11.817 8.183 10 6.25 10C4.317 10 2.5 11.817 2.5 13.75H1.25ZM6.25 8.125C4.17893 8.125 2.5 6.44607 2.5 4.375C2.5 2.30393 4.17893 0.625 6.25 0.625C8.32107 0.625 10 2.30393 10 4.375C10 6.44607 8.32107 8.125 6.25 8.125ZM6.25 6.875C7.63071 6.875 8.75 5.75571 8.75 4.375C8.75 2.99429 7.63071 1.875 6.25 1.875C4.86929 1.875 3.75 2.99429 3.75 4.375C3.75 5.75571 4.86929 6.875 6.25 6.875ZM11.4273 8.93925C12.9153 9.72257 14.375 11.72 14.375 13.75H13.125C13.125 12.2275 12.2177 10.9169 10.9142 10.3294L11.4273 8.93925ZM10.9976 2.13325C12.246 2.64814 13.125 3.87523 13.125 5.3125C13.125 7.10639 11.7526 8.57822 10 8.73475V7.47288C11.0604 7.34138 11.875 6.42625 11.875 5.3125C11.875 4.44459 11.376 3.70377 10.6506 3.36021L10.9976 2.13325Z"
+        fill="currentColor"
+        fillRule="evenodd"
+        clipRule="evenodd"
+      />
+    </svg>
+  )
+}
+const TagBadge = ({ tag }: { tag: string }) => {
+  let tagColor: "gray" | "crimson" | "blue" = "gray"
+  let displayTag = tag
+
+  if (tag.startsWith("female:")) {
+    tagColor = "crimson"
+    displayTag = tag.replace("female:", "")
+  } else if (tag.startsWith("male:")) {
+    tagColor = "blue"
+    displayTag = tag.replace("male:", "")
+  } else if (tag.startsWith("tag:")) {
+    tagColor = "gray"
+    displayTag = tag.replace("tag:", "")
+  }
+
+  return (
+    <Badge
+      size="1"
+      variant="soft"
+      color={tagColor}
+      style={{ cursor: "pointer" }}
+    >
+      {displayTag}
+    </Badge>
+  )
+}
+
+const InfoArtist = ({ artist }: { artist: string[] }) => {
+  if (!(artist.length === 0))
+    return (
+      <Flex align="center" gap="2">
+        <PersonIcon />
+        <Heading color="gray" size="3" weight="medium">
+          {artist.join(", ")}
+        </Heading>
+      </Flex>
+    )
+}
+
+const InfoGroup = ({ group }: { group: string[] }) => {
+  if (!(group.length === 0))
+    return (
+      <Flex align="center" gap="2">
+        <GroupIcon />
+        <Heading color="gray" size="3" weight="medium">
+          {group.join(", ")}
+        </Heading>
+      </Flex>
+    )
+}
+
+const InfoTypeBadge = ({ type }: { type: string }) => {
+  return (
+    <Text size="2" color="gray">
+      <Badge color="green" variant="surface" size="1">
+        {type.charAt(0).toUpperCase() + type.slice(1)}
+      </Badge>
+    </Text>
+  )
+
+}
+
+const InfoThumbnail = ({ thumbnail }: { thumbnail: string }) => {
+  return (
+    <img
+      src={`https://api.saebasol.org/api/proxy/${encodeURIComponent(thumbnail)}`}
+      alt="Thumbnail"
+      style={{
+        width: "200px",
+        height: "280px",
+        objectFit: "cover",
+        borderRadius: "8px",
+        backgroundColor: "var(--gray-5)",
+      }}
+    />
+  )
+}
+
+const InfoLanguage = ({ language }: { language: string }) => {
+  return (
+    <Flex direction="column" gap="1">
+      <Text size="2" weight="medium">
+        Language
+      </Text>
+      <Text size="2" color="gray">
+        {language.charAt(0).toUpperCase() + language.slice(1)}
+      </Text>
+    </Flex>
+  )
+}
+
+const InfoSeries = ({ series }: { series: string[] }) => {
+  if (!(series.length === 0))
+    return (
+      <Flex direction="column" gap="1">
+        <Text size="2" weight="medium">
+          Series
+        </Text>
+        <Text size="2" color="gray">
+          {series.join(", ")}
+        </Text>
+      </Flex>
+    )
+}
+
+const InfoCharacter = ({ character }: { character: string[] }) => {
+  if (!(character.length === 0))
+    return (
+      <Flex direction="column" gap="1">
+        <Text size="2" weight="medium">
+          Characters
+        </Text>
+        <Text size="2" color="gray">
+          {character.join(", ")}
+        </Text>
+      </Flex>
+    )
+}
+
+const InfoTag = ({ tag }: { tag: string[] }) => {
+  if (!(tag.length === 0))
+    return (
+      <Flex direction="column" gap="2">
+        <Text size="2" weight="medium">
+          Tags ({tag.length})
+        </Text>
+        <Flex gap="1" wrap="wrap" style={{ maxHeight: "120px", overflowY: "auto" }}>
+          {tag.map((tag, index) => (
+            <TagBadge key={index} tag={tag} />
+          ))}
+        </Flex>
+      </Flex>
+    )
+}
+
+const InfoDate = ({ date }: { date: string }) => {
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    })
+  }
+
+  return (
+    <Flex align="center" justify="end" gap="2">
+      <CalendarIcon />
+      <Text size="2" color="gray">
+        {formatDate(date)}
+      </Text>
+    </Flex>
+  )
+}
+
+
+const InfoCard = ({ infoData }: { infoData: HeliotropeInfo }) => {
+
+
+  return (
+    <Box width="70%">
+      <Card size="3" >
+        <Flex direction="column" gap="4">
+          <Heading size="6" weight="bold">
+            {infoData.title}
+          </Heading>
+
+          <Flex justify="between" align="center" gap="4">
+
+            <Flex gap="4" direction="column" >
+              <InfoArtist artist={infoData.artist} />
+              <InfoGroup group={infoData.group} />
+            </Flex>
+
+            <Flex direction="column" gap="1">
+              <InfoTypeBadge type={infoData.type} />
+            </Flex>
+          </Flex>
+
+
+          <Separator size="4" />
+
+          <Flex direction={{ initial: 'column', sm: 'row' }} gap="4">
+            <Flex align="center" justify="center" style={{ flexShrink: 0 }}>
+              <InfoThumbnail thumbnail={infoData.thumbnail} />
+            </Flex>
+
+            <Flex direction="column" gap="3" >
+              <InfoLanguage language={infoData.language} />
+              <InfoSeries series={infoData.series} />
+              <InfoCharacter character={infoData.character} />
+
+              <InfoTag tag={infoData.tag} />
+            </Flex>
+          </Flex>
+
+          <Separator size="4" />
+
+          <InfoDate date={infoData.date} />
+
+        </Flex>
+      </Card>
+    </Box>
+
+  )
+}
+
+export default InfoCard

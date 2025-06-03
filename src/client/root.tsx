@@ -3,7 +3,7 @@ import '@radix-ui/themes/styles.css'
 import { Suspense } from 'react'
 import { Route, Routes } from 'react-router'
 import { AppRoute, Router } from '$app/core.tsx'
-import { Heading, Theme } from '@radix-ui/themes'
+import { Theme } from '@radix-ui/themes'
 
 const Root = ({ url, routes, head, ctxHydration, routeMap }: {
   url: string
@@ -13,7 +13,7 @@ const Root = ({ url, routes, head, ctxHydration, routeMap }: {
   routeMap: Record<string, any>
 }) => {
   return (
-    <Theme appearance="dark" accentColor="red">
+    <Theme appearance="dark" accentColor="ruby">
       <Suspense>
         <Router location={url}>
           <Routes>

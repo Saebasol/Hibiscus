@@ -67,11 +67,11 @@ const FooterLinkOpenSource = () => {
         Open Source
       </Heading>
       <Flex direction="column" gap="1">
-        <Link size="2" color="gray" href="#" style={{ display: 'flex', alignItems: 'center' }}>
+        <Link size="2" color="gray" href="https://github.com/Saebasol/Heliotrope" style={{ display: 'flex', alignItems: 'center' }}>
           <GitHubLogoIcon style={{ marginRight: '6px' }} />
           Heliotrope
         </Link>
-        <Link size="2" color="gray" href="#" style={{ display: 'flex', alignItems: 'center' }}>
+        <Link size="2" color="gray" href="https://github.com/Saebasol" style={{ display: 'flex', alignItems: 'center' }}>
           <GitHubLogoIcon style={{ marginRight: '6px' }} />
           Hibiscus
         </Link>
