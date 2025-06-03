@@ -111,14 +111,15 @@ const FooterText = () => {
         align={{ initial: 'center', sm: 'start' }}
       >
         <Text size="1" color="gray" >
-          Made with ❤️ by Saebasol
+          Made with ❤️ by&nbsp;
+          <Link href="https://github.com/Saebasol" target="_blank" rel="noopener noreferrer">Saebasol</Link>
         </Text>
         <Text size="1" color="gray">
           Powered by&nbsp;
-          <Link href="https://radix-ui.com" target="_blank" rel="noopener noreferrer">Radix UI</Link>&nbsp;&&nbsp;
+          <Link href="https://fastify.dev" target="_blank" rel="noopener noreferrer">Fastify</Link>&nbsp;&&nbsp;
           <Link href="https://vitejs.dev" target="_blank" rel="noopener noreferrer">Vite</Link>&nbsp;&&nbsp;
           <Link href="https://react.dev" target="_blank" rel="noopener noreferrer">React</Link>&nbsp;&&nbsp;
-          <Link href="https://fastify.dev" target="_blank" rel="noopener noreferrer">Fastify</Link>
+          <Link href="https://radix-ui.com" target="_blank" rel="noopener noreferrer">Radix UI</Link>
         </Text>
 
       </Flex>
