@@ -177,7 +177,7 @@ const InfoCard = ({ infoData }: { infoData: HeliotropeInfo }) => {
 
 
   return (
-    <Box width="70%">
+    <Box width="90%">
       <Card size="3" >
         <Flex direction="column" gap="4">
           <Heading size="6" weight="bold">

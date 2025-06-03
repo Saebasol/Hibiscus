@@ -1,4 +1,4 @@
-import { Box, Container, Flex, Heading, Link, Separator, Text, Grid } from '@radix-ui/themes'
+import { Box, Container, Flex, Heading, Link, Separator, Text, Grid, Quote, Blockquote } from '@radix-ui/themes'
 import { DiscordLogoIcon, GitHubLogoIcon } from '@radix-ui/react-icons'
 
 const FooterMain = () => {
@@ -7,9 +7,15 @@ const FooterMain = () => {
       <Heading size="4" mb="2">
         Hibiscus
       </Heading>
-      <Text size="2" color="gray">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit.
-      </Text>
+      <Blockquote>
+        <Quote>
+          <Text size="2" color="gray">
+            Delicate beauty.
+          </Text>
+        </Quote>
+
+      </Blockquote>
+
     </Box>
   )
 }
