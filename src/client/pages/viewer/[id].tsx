@@ -87,7 +87,6 @@ const LazyImage = ({ src, alt, index, dimensions, screenSize }: LazyImageProps) 
       width={`${optimalSize.width}px`}
       height={`${optimalSize.height}px`}
     >
-      {/* Skeleton - 로딩 중 */}
       {!isLoaded && !hasError && (
         <Skeleton
           width={`${optimalSize.width}px`}
@@ -95,7 +94,6 @@ const LazyImage = ({ src, alt, index, dimensions, screenSize }: LazyImageProps) 
         />
       )}
 
-      {/* 실제 이미지 */}
       {isInView && (
         <img
           src={src}
@@ -168,6 +166,7 @@ const Index = () => {
       direction="column"
       justify="center"
       align="center"
+      gap="1rem"
     >
       <ImageViewer images={images} />
     </Flex>
