@@ -13,6 +13,7 @@ const LazyImage = ({ src, alt, index, dimensions, screenSize }: LazyImageProps) 
   useEffect(() => {
     if ([0, 1, 2].includes(index)) {
       setIsInView(true)
+      return
     }
     const observer = new IntersectionObserver(
       ([entry]) => {
