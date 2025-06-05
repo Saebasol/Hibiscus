@@ -1,5 +1,5 @@
 import { Box, Card, Flex, Separator, Heading } from "@radix-ui/themes"
-import type HeliotropeInfo from "../../types/HeliotropeInfo"
+import { type HeliotropeInfo } from "../../contexts/ViewerContext"
 import InfoArtist from "./Artist"
 import InfoTag from "./Tag"
 import InfoGroup from "./Group"
@@ -10,12 +10,7 @@ import InfoSeries from "./Series"
 import InfoCharacter from "./Charactor"
 import InfoDate from "./Date"
 
-
-
-
 const InfoCard = ({ infoData }: { infoData: HeliotropeInfo }) => {
-
-
   return (
     <Box width="90%">
       <Card size="3" >
