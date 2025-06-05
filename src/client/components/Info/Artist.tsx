@@ -6,7 +6,7 @@ const InfoArtist = ({ artist }: { artist: string[] }) => {
     return (
       <Flex align="center" gap="2">
         <PersonIcon />
-        <Heading color="gray" size="3" weight="medium">
+        <Heading color="gray" size="1" weight="medium">
           {artist.join(", ")}
         </Heading>
       </Flex>

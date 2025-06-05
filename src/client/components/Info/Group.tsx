@@ -19,7 +19,7 @@ const InfoGroup = ({ group }: { group: string[] }) => {
     return (
       <Flex align="center" gap="2">
         <GroupIcon />
-        <Heading color="gray" size="3" weight="medium">
+        <Heading color="gray" size="1" weight="medium">
           {group.join(", ")}
         </Heading>
       </Flex>
