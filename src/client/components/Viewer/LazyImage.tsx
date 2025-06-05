@@ -1,27 +1,6 @@
-import { useState, useEffect, useRef, useMemo } from 'react'
-// @ts-ignore
-import { useRouteContext } from '@fastify/react/client'
+import React, { useEffect, useState, useRef, useMemo } from 'react'
 import { Flex, Skeleton } from '@radix-ui/themes'
-import ScrollViewer from 'src/client/components/Viewer/ScrollViewer'
-
-export const layout = 'viewer'
-
-// @ts-ignore
-export function getData({ req }) {
-}
-
-interface ImageDimensions {
-  width: number
-  height: number
-}
-
-interface LazyImageProps {
-  src: string
-  alt: string
-  index: number
-  dimensions: ImageDimensions
-  screenSize: { width: number; height: number }
-}
+import { type LazyImageProps } from './types'
 
 const LazyImage = ({ src, alt, index, dimensions, screenSize }: LazyImageProps) => {
   const [isLoaded, setIsLoaded] = useState(false)
@@ -115,64 +94,5 @@ const LazyImage = ({ src, alt, index, dimensions, screenSize }: LazyImageProps) 
   )
 }
 
-interface ImageViewerProps {
-  images: Array<{
-    url: string
-    dimensions: ImageDimensions
-  }>
-}
 
-
-const ImageViewer = ({ images }: ImageViewerProps) => {
-  const [screenSize, setScreenSize] = useState({ width: 0, height: 0 })
-
-  useEffect(() => {
-    const updateScreenSize = () => {
-      setScreenSize({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      })
-    }
-
-    updateScreenSize()
-    window.addEventListener('resize', updateScreenSize)
-    window.addEventListener('orientationchange', updateScreenSize)
-
-    return () => {
-      window.removeEventListener('resize', updateScreenSize)
-      window.removeEventListener('orientationchange', updateScreenSize)
-    }
-  }, [])
-
-  return images.map((image, index) => (
-    <LazyImage
-      key={index}
-      src={image.url}
-      alt={`page-${index + 1}`}
-      index={index}
-      dimensions={image.dimensions}
-      screenSize={screenSize}
-    />
-  ))
-}
-
-const Index = () => {
-  const { data } = useRouteContext()
-
-  const images = []
-
-  return (
-    <Flex
-      direction="column"
-      justify="center"
-      align="center"
-      gap="1rem"
-    >
-      <ImageViewer images={images} />
-    </Flex>
-    <ScrollViewer images={images} />
-
-  )
-}
-
-export default Index
+export default LazyImage
