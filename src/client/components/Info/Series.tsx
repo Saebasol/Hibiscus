@@ -1,4 +1,4 @@
-import { Flex, Text } from "@radix-ui/themes";
+import { Flex, Text, Badge } from "@radix-ui/themes";
 
 const InfoSeries = ({ series }: { series: string[] }) => {
   if (!(series.length === 0))
@@ -7,9 +7,21 @@ const InfoSeries = ({ series }: { series: string[] }) => {
         <Text size="2" weight="medium">
           Series
         </Text>
-        <Text size="2" color="gray">
-          {series.join(", ")}
-        </Text>
+        <Flex gap="1" wrap="wrap" style={{ overflowY: "auto" }}>
+          {
+            series.map((s, index) => (
+              <Badge
+                key={index}
+                size="1"
+                variant="soft"
+                color="gray"
+                style={{ cursor: "pointer" }}
+              >
+                {s}
+              </Badge>
+            ))
+          }
+        </Flex>
       </Flex>
     )
 }

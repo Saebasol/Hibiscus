@@ -34,7 +34,7 @@ const InfoTag = ({ tag }: { tag: string[] }) => {
         <Text size="2" weight="medium">
           Tags ({tag.length})
         </Text>
-        <Flex gap="1" wrap="wrap" style={{ maxHeight: "120px", overflowY: "auto" }}>
+        <Flex gap="1" wrap="wrap" style={{ overflowY: "auto" }}>
           {tag.map((tag, index) => (
             <TagBadge key={index} tag={tag} />
           ))}

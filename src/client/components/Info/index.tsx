@@ -1,4 +1,4 @@
-import { Box, Card, Flex, Separator, Heading } from "@radix-ui/themes"
+import { Box, Card, Flex, Separator, Heading, Link } from "@radix-ui/themes"
 import { type HeliotropeInfo } from "../../contexts/ViewerContext"
 import InfoArtist from "./Artist"
 import InfoTag from "./Tag"
@@ -15,8 +15,11 @@ const InfoCard = ({ infoData }: { infoData: HeliotropeInfo }) => {
     <Box width="90%">
       <Card size="3" >
         <Flex direction="column" gap="4">
-          <Heading size="6" weight="bold">
-            {infoData.title}
+          <Heading size="6" weight="bold" color="gray" >
+            <Link href={`/viewer/${infoData.id}`} underline="hover" >
+              {infoData.title}
+            </Link>
+
           </Heading>
 
           <Flex justify="between" align="center" gap="4">
@@ -36,7 +39,7 @@ const InfoCard = ({ infoData }: { infoData: HeliotropeInfo }) => {
 
           <Flex direction={{ initial: 'column', sm: 'row' }} gap="4">
             <Flex align="center" justify="center" style={{ flexShrink: 0 }}>
-              <InfoThumbnail thumbnail={infoData.thumbnail} />
+              <InfoThumbnail thumbnail={infoData.thumbnail} id={infoData.id} />
             </Flex>
 
             <Flex direction="column" gap="3" >

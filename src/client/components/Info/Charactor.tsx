@@ -1,4 +1,4 @@
-import { Flex, Text } from "@radix-ui/themes";
+import { Badge, Flex, Text } from "@radix-ui/themes";
 
 
 const InfoCharacter = ({ character }: { character: string[] }) => {
@@ -8,9 +8,21 @@ const InfoCharacter = ({ character }: { character: string[] }) => {
         <Text size="2" weight="medium">
           Characters
         </Text>
-        <Text size="2" color="gray">
-          {character.join(", ")}
-        </Text>
+        <Flex gap="1" wrap="wrap" style={{ overflowY: "auto" }}>
+          {
+            character.map((c, index) => (
+              <Badge
+                key={index}
+                size="1"
+                variant="soft"
+                color="gray"
+                style={{ cursor: "pointer" }}
+              >
+                {c}
+              </Badge>
+            ))
+          }
+        </Flex>
       </Flex>
     )
 }

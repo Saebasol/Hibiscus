@@ -1,16 +1,21 @@
-const InfoThumbnail = ({ thumbnail }: { thumbnail: string }) => {
+import { Link } from "@radix-ui/themes"
+
+const InfoThumbnail = ({ thumbnail, id }: { thumbnail: string, id: number }) => {
   return (
-    <img
-      src={`https://api.saebasol.org/api/proxy/${encodeURIComponent(thumbnail)}`}
-      alt="Thumbnail"
-      style={{
-        width: "200px",
-        height: "280px",
-        objectFit: "cover",
-        borderRadius: "8px",
-        backgroundColor: "var(--gray-5)",
-      }}
-    />
+    <Link href={`/viewer/${id}`}>
+      <img
+        loading="lazy"
+        alt="Thumbnail"
+        style={{
+          width: "12.5rem",
+          height: "17.5rem",
+          objectFit: "cover",
+          borderRadius: "8px",
+          backgroundColor: "var(--gray-5)",
+        }}
+      />
+    </Link>
+
   )
 }
 
