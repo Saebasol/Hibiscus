@@ -10,7 +10,7 @@ const FooterLink = () => {
       columns={{ initial: '2', sm: '4' }}
       gap="4"
       width="100%"
-      style={{ maxWidth: '600px' }}
+      style={{ maxWidth: '35rem' }}
     >
       <FooterLinkSupport />
       <FooterLinkResources />

@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 // @ts-ignore
 import { useRouteContext } from '@fastify/react/client'
-import { Flex, Skeleton } from '@radix-ui/themes'
-import ScrollViewer from 'src/client/components/Viewer/ScrollViewer'
+import Viewer from '../../components/Viewer'
 
 export const layout = 'viewer'
 
 // @ts-ignore
 export function getData({ req }) {
+  return { id: req.params.id }
 }
 
 interface ImageDimensions {
@@ -162,15 +162,7 @@ const Index = () => {
   const images = []
 
   return (
-    <Flex
-      direction="column"
-      justify="center"
-      align="center"
-      gap="1rem"
-    >
-      <ImageViewer images={images} />
-    </Flex>
-    <ScrollViewer images={images} />
+    <Viewer images={images} />
 
   )
 }

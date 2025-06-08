@@ -24,7 +24,6 @@ const ImageRenderer = ({ image, index }: ImageRendererProps) => {
   }, [])
 
   return <LazyImage
-    key={index}
     src={image.url}
     alt={`page-${index + 1}`}
     index={index}

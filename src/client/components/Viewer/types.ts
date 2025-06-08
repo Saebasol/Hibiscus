@@ -13,11 +13,14 @@ export interface LazyImageProps {
 export interface Image {
   url: string
   dimensions: Dimensions
-
 }
 
 export interface ImageRendererProps {
   image: Image
   index: number
+}
+
+export interface ViewerProps {
+  images: Image[]
 }
 

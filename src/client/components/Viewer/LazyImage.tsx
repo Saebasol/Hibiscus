@@ -76,6 +76,7 @@ const LazyImage = ({ src, alt, index, dimensions, screenSize }: LazyImageProps) 
 
       {isInView && (
         <img
+          id={(index + 1).toString()}
           src={src}
           alt={alt}
           onLoad={handleLoad}

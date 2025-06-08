@@ -18,7 +18,6 @@
     "baseUrl": "../../",
     "paths": {
       "$app/*": [
-        "./src/client/*",
         "./node_modules/@fastify/react/virtual-ts/*"
       ]
     }
