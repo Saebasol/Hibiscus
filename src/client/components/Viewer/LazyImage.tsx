@@ -60,6 +60,7 @@ const LazyImage = ({ src, alt, index, dimensions, screenSize }: LazyImageProps) 
 
   return (
     <Flex
+      id={(index + 1).toString()}
       align="center"
       justify="center"
       ref={imgRef}
@@ -75,7 +76,6 @@ const LazyImage = ({ src, alt, index, dimensions, screenSize }: LazyImageProps) 
 
       {isInView && (
         <img
-          id={(index + 1).toString()}
           src={src}
           alt={alt}
           onLoad={handleLoad}

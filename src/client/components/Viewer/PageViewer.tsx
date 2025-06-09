@@ -2,11 +2,12 @@ import { useState, useMemo, useEffect } from 'react'
 import { Flex } from '@radix-ui/themes'
 import ImageRenderer from './ImageRenderer'
 import { type ViewerProps } from './types'
-import { useLocation } from 'react-router'
+import { useLocation, useNavigate } from 'react-router'
 
 const PageViewer = ({ images }: ViewerProps) => {
   const [currentPage, setCurrentPage] = useState(0)
-  const location = useLocation()
+  const { hash } = useLocation()
+  const navigate = useNavigate()
 
 
   const visibleRange = useMemo(() => {
@@ -20,19 +21,24 @@ const PageViewer = ({ images }: ViewerProps) => {
   const goToNextPage = () => {
     const nextPage = (currentPage + 1) % images.length
     setCurrentPage(nextPage)
-
-    window.history.pushState(null, '', `#${nextPage + 1}`)
+    navigate(`#${nextPage + 1}`, { replace: true })
   }
+
+  useEffect(() => {
+    if (!hash) {
+      navigate(`#${currentPage + 1}`, { replace: true })
+    }
+  }, [currentPage, hash])
 
 
   useEffect(() => {
-    if (location.hash && images.length > 0) {
-      const pageNumber = parseInt(location.hash.replace('#', ''))
+    if (hash && images.length > 0) {
+      const pageNumber = parseInt(hash.replace('#', ''))
       if (pageNumber >= 1 && pageNumber <= images.length) {
         setCurrentPage(pageNumber - 1)
       }
     }
-  }, [location.hash, images.length])
+  }, [hash, images.length])
 
   return (
     <Flex

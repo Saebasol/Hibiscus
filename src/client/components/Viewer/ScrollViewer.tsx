@@ -5,18 +5,18 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router';
 
 const ScrollViewer = ({ images }: ViewerProps) => {
-  const location = useLocation()
+  const { hash } = useLocation()
 
   useEffect(() => {
-    if (location.hash) {
-      const el = document.getElementById(location.hash.replace('#', ''));
+    if (hash) {
+      const el = document.getElementById(hash.replace('#', ''));
       if (el) {
         setTimeout(() => {
           el.scrollIntoView({ behavior: "smooth" });
         }, 100);
       }
     }
-  }, [location]);
+  }, [hash]);
 
   return (
     <Flex
