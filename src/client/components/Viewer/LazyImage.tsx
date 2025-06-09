@@ -46,9 +46,8 @@ const LazyImage = ({ src, alt, index, dimensions, screenSize }: LazyImageProps) 
 
   const optimalSize = useMemo(() => {
     const aspectRatio = dimensions.width / dimensions.height
-    const screenWidth = screenSize.width || window.innerWidth
-    const screenHeight = screenSize.height || window.innerHeight
-
+    const screenWidth = screenSize.width
+    const screenHeight = screenSize.height
     const widthBasedHeight = screenWidth / aspectRatio
     const heightBasedWidth = screenHeight * aspectRatio
 

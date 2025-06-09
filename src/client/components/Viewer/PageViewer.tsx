@@ -8,12 +8,22 @@ const PageViewer = ({ images }: ViewerProps) => {
   const [currentPage, setCurrentPage] = useState(0)
   const location = useLocation()
 
+
   const visibleRange = useMemo(() => {
     const buffer = 2
     const start = Math.max(0, currentPage - buffer)
     const end = Math.min(images.length, currentPage + buffer + 1)
     return { start, end }
   }, [currentPage, images.length])
+
+
+  const goToNextPage = () => {
+    const nextPage = (currentPage + 1) % images.length
+    setCurrentPage(nextPage)
+
+    window.history.pushState(null, '', `#${nextPage + 1}`)
+  }
+
 
   useEffect(() => {
     if (location.hash && images.length > 0) {
@@ -24,12 +34,6 @@ const PageViewer = ({ images }: ViewerProps) => {
     }
   }, [location.hash, images.length])
 
-  const goToNextPage = () => {
-    const nextPage = (currentPage + 1) % images.length
-    setCurrentPage(nextPage)
-
-    window.history.pushState(null, '', `#${nextPage + 1}`)
-  }
   return (
     <Flex
       direction="column"
@@ -50,10 +54,8 @@ const PageViewer = ({ images }: ViewerProps) => {
               justify="center"
               left="50%"
               top="50%"
-
               style={{
                 opacity: isVisible ? 1 : 0,
-                transition: 'opacity 0.2s ease',
                 transform: `translate(-50%, -50%)`,
               }}
             >

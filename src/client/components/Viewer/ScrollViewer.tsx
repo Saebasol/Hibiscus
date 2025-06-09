@@ -20,6 +20,7 @@ const ScrollViewer = ({ images }: ViewerProps) => {
 
   return (
     <Flex
+      mt="4rem"
       direction="column"
       justify="center"
       align="center"
