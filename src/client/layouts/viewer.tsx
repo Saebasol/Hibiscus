@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef } from "react";
-import { useIsVisibleHeaderFooter } from "../components/Viewer/context";
+import { useIsVisibleHeaderFooter, useToggleViewerMode } from "../components/Viewer/context";
 import ViewerFooter from "../components/Viewer/Footer";
 import ViewerHeader from "../components/Viewer/Header";
 

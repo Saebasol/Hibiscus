@@ -1,6 +1,9 @@
 import { Box, Flex, Text } from '@radix-ui/themes'
+import { useToggleViewerMode } from '../context'
+import { PageModeButton, ScrollModeButton } from './Button'
 
 const ViewerFooter = ({ isVisible }: { isVisible: boolean }) => {
+  const toggleViewerMode = useToggleViewerMode()[0]
   return (
     <>
       <Box
@@ -25,7 +28,7 @@ const ViewerFooter = ({ isVisible }: { isVisible: boolean }) => {
         style={{
           backgroundColor: 'var(--color-background)',
           borderTop: '1px solid var(--gray-6)',
-          zIndex: 1000,
+          zIndex: isVisible ? 1001 : -1,
           transform: isVisible ? 'translateY(0)' : 'translateY(100%)',
           transition: 'transform 0.3s ease-in-out',
           pointerEvents: isVisible ? 'auto' : 'none'
@@ -44,7 +47,7 @@ const ViewerFooter = ({ isVisible }: { isVisible: boolean }) => {
             </Text>
 
             <Flex gap="3" align="center">
-              {/* 푸터 버튼들 */}
+              {toggleViewerMode ? <ScrollModeButton /> : <PageModeButton />}
             </Flex>
           </Flex>
         </footer>
