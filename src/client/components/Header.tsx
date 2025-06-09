@@ -4,15 +4,14 @@ const Header = () => {
   return (
     <>
       <Box
-        position="fixed"
+        position="sticky"
         top="0"
-        left="0"
-        right="0"
+        height="4rem"
         style={{
           zIndex: 1000,
-          height: '64px',
-          backgroundColor: 'var(--color-background, #0a0a0a)',
-          borderBottom: '1px solid var(--gray-6, #333)'
+          height: '4rem',
+          backgroundColor: 'var(--color-background)',
+          borderBottom: '1px solid var(--gray-6)'
         }}
         asChild
       >
@@ -33,9 +32,6 @@ const Header = () => {
           </Flex>
         </header>
       </Box>
-
-      {/* 헤더 높이만큼 공간 확보 */}
-      <Box style={{ height: '64px' }} />
     </>
   );
 }
