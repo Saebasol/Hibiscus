@@ -5,6 +5,7 @@ const InfoThumbnail = ({ thumbnail, id }: { thumbnail: string, id: number }) => 
     <Link href={`/viewer/${id}`}>
       <img
         loading="lazy"
+        src={"https://heliotrope.saebasol.org/api/proxy/" + encodeURIComponent(thumbnail)}
         alt="Thumbnail"
         style={{
           width: "12.5rem",
