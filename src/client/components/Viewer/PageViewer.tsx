@@ -21,12 +21,12 @@ const PageViewer = ({ images }: ViewerProps) => {
   const goToNextPage = () => {
     const nextPage = (currentPage + 1) % images.length
     setCurrentPage(nextPage)
-    navigate(`#${nextPage + 1}`, { replace: true })
+    navigate(`#${nextPage + 1}`, { replace: false })
   }
 
   useEffect(() => {
     if (!hash) {
-      navigate(`#${currentPage + 1}`, { replace: true })
+      navigate(`#${currentPage + 1}`, { replace: false })
     }
   }, [currentPage, hash])
 
