@@ -27,6 +27,11 @@ const Index = () => {
           />
         ))
       }
+      <Pagenator
+        count={count}
+        currentPage={Number(data.index)}
+        onPageChange={onPageChange}
+      />
     </Flex>
   )
 }
