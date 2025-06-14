@@ -1,4 +1,5 @@
 import { Box, Flex, Heading } from "@radix-ui/themes";
+import SearchBar from "./SearchBar";
 
 const Header = () => {
   return (
@@ -27,7 +28,7 @@ const Header = () => {
             </Heading>
 
             <Flex gap="3">
-              {/* 필요시 네비게이션 메뉴 추가 */}
+              <SearchBar />
             </Flex>
           </Flex>
         </header>

@@ -1,11 +1,11 @@
 import { Badge, Flex, Text } from "@radix-ui/themes"
 
 const TagBadge = ({ tag }: { tag: string }) => {
-  let tagColor: "gray" | "crimson" | "blue" = "gray"
+  let tagColor: "gray" | "ruby" | "blue" = "gray"
   let displayTag = tag
 
   if (tag.startsWith("female:")) {
-    tagColor = "crimson"
+    tagColor = "ruby"
     displayTag = tag.replace("female:", "")
   } else if (tag.startsWith("male:")) {
     tagColor = "blue"
