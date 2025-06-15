@@ -6,6 +6,7 @@ const InfoThumbnail = ({ thumbnail, id }: { thumbnail: string, id: number }) => 
       <img
         loading="lazy"
         alt="Thumbnail"
+        src={thumbnail}
         style={{
           width: "12.5rem",
           height: "17.5rem",

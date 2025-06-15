@@ -1,9 +1,9 @@
 import { IconButton } from '@radix-ui/themes';
-import { useToggleViewerMode } from '../context';
+import { useViewerModeWithLocalStorage } from '../context';
 import { HeightIcon, SizeIcon } from '@radix-ui/react-icons';
 
 export const ScrollModeButton = () => {
-  const [, setToggleViewerMode] = useToggleViewerMode();
+  const setToggleViewerMode = useViewerModeWithLocalStorage()[1]
   return (
     <IconButton onClick={() => {
       setToggleViewerMode(false);
@@ -15,7 +15,7 @@ export const ScrollModeButton = () => {
 }
 
 export const PageModeButton = () => {
-  const [, setToggleViewerMode] = useToggleViewerMode();
+  const setToggleViewerMode = useViewerModeWithLocalStorage()[1]
   return (
     <IconButton onClick={() => {
       setToggleViewerMode(true);

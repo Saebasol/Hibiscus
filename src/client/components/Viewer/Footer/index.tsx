@@ -1,9 +1,9 @@
 import { Box, Flex, Text } from '@radix-ui/themes'
-import { useToggleViewerMode } from '../context'
+import { useViewerModeWithLocalStorage } from '../context'
 import { PageModeButton, ScrollModeButton } from './Button'
 
 const ViewerFooter = ({ isVisible }: { isVisible: boolean }) => {
-  const toggleViewerMode = useToggleViewerMode()[0]
+  const toggleViewerMode = useViewerModeWithLocalStorage()[0]
   return (
     <>
       <Box

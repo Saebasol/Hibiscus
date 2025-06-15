@@ -2,16 +2,42 @@
 import { useRouteContext } from '@fastify/react/client'
 import InfoCard from '../../components/Info'
 import { Flex } from '@radix-ui/themes'
-import type HeliotropeInfo from '$app/types/HeliotropeInfo'
+import { List, type RawListData } from '@saebasol/delphinium'
+import Pagenator from '../../components/Pagenator'
+import { useNavigate } from 'react-router'
+import { useEffect } from 'react'
 
 
 // @ts-ignore
-export function getData({ req }) {
-  return { index: req.params.index }
+export const getData = async ctx => {
+  const index = Number(ctx.req.params.index) || 1
+
+  const response = await fetch(ctx.state.baseUrl + `/internal/list/${index}`)
+
+  if (!response.ok) {
+    return {
+      results: { list: [], total: 0 } as RawListData,
+      index: index
+    }
+  }
+  const data = await response.json()
+
+  return {
+    results: data,
+    index: index
+  }
+
 }
 
 const Index = () => {
-  const { data } = useRouteContext()
+  const { data }: { data: { results: RawListData, index: number } } = useRouteContext()
+  const navigate = useNavigate()
+
+  const onPageChange = (page: number) => {
+    navigate(`/list/${page}`,)
+  }
+
+
   return (
     <Flex
       m="4"
@@ -20,7 +46,7 @@ const Index = () => {
       align="center"
     >
       {
-        [].map((item) => (
+        data.results.list.map((item) => (
           <InfoCard
             key={item.id}
             infoData={item}
@@ -28,7 +54,7 @@ const Index = () => {
         ))
       }
       <Pagenator
-        count={count}
+        count={data.results.total}
         currentPage={Number(data.index)}
         onPageChange={onPageChange}
       />

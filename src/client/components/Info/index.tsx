@@ -8,8 +8,9 @@ import InfoLanguage from "./Language"
 import InfoSeries from "./Series"
 import InfoCharacter from "./Charactor"
 import InfoDate from "./Date"
+import { type RawInfoData } from "@saebasol/delphinium"
 
-const InfoCard = ({ infoData }: { infoData: any }) => {
+const InfoCard = ({ infoData }: { infoData: RawInfoData }) => {
   return (
     <Box width="90%">
       <Card size="3" >
@@ -24,8 +25,8 @@ const InfoCard = ({ infoData }: { infoData: any }) => {
           <Flex justify="between" align="center" gap="4">
 
             <Flex gap="4" direction="column" >
-              <InfoArtist artist={infoData.artist} />
-              <InfoGroup group={infoData.group} />
+              <InfoArtist artist={infoData.artists} />
+              <InfoGroup group={infoData.groups} />
             </Flex>
 
             <Flex direction="column" gap="1">
@@ -44,9 +45,9 @@ const InfoCard = ({ infoData }: { infoData: any }) => {
             <Flex direction="column" gap="3" >
               <InfoLanguage language={infoData.language} />
               <InfoSeries series={infoData.series} />
-              <InfoCharacter character={infoData.character} />
+              <InfoCharacter character={infoData.characters} />
 
-              <InfoTag tag={infoData.tag} />
+              <InfoTag tag={infoData.tags} />
             </Flex>
           </Flex>
 
