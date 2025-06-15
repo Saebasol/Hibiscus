@@ -1,11 +1,10 @@
-import { useCallback, useEffect, useRef } from "react";
-import { useIsVisibleHeaderFooter } from "../components/Viewer/context";
+import { useCallback, useEffect, useRef, useState } from "react";
 import ViewerFooter from "../components/Viewer/Footer";
 import ViewerHeader from "../components/Viewer/Header";
 
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
-  const [isVisible, setIsVisible] = useIsVisibleHeaderFooter()
+  const [isVisible, setIsVisible] = useState(false);
   const headerSize = 4 * 16
   const footerSize = 4 * 16
   const hideTimerRef = useRef<number | undefined>(undefined)

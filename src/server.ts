@@ -53,8 +53,10 @@ server.get('/internal/image/:index', async (request, reply) => {
     }
   }))
 
-  return reply.status(200).send(imageUrls)
-
+  return reply.status(200).send({
+    title: galleryInfo.title,
+    images: imageUrls,
+  })
 })
 
 server.get('/internal/list/:index', async (request, reply) => {

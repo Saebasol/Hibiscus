@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { create } from "../../utils/context";
 
-export const useIsVisibleHeaderFooter = create(true)
+export const useViewerHeaderTitle = create("Viewer");
 
 export const useToggleViewerMode = create(false)
 

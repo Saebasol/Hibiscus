@@ -1,6 +1,9 @@
 import { Box, Flex, Heading } from '@radix-ui/themes'
+import { useViewerHeaderTitle } from '../context'
 
 const ViewerHeader = ({ isVisible }: { isVisible: boolean }) => {
+  const title = useViewerHeaderTitle()[0]
+
   return (
     <>
       <Box
@@ -39,7 +42,7 @@ const ViewerHeader = ({ isVisible }: { isVisible: boolean }) => {
             px="4"
           >
             <Heading size="5" weight="medium">
-              Viewer
+              {title}
             </Heading>
 
             <Flex gap="3" align="center">

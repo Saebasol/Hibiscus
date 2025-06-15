@@ -1,6 +1,8 @@
 // @ts-ignore
 import { useRouteContext } from '@fastify/react/client'
 import Viewer from '../../components/Viewer'
+import { useViewerHeaderTitle } from '../../components/Viewer/context'
+import { useEffect } from 'react'
 
 export const layout = 'viewer'
 
@@ -16,7 +18,7 @@ export const getData = async ctx => {
   const data = await response.json()
 
   return {
-    results: data,
+    result: data,
     id: ctx.req.params.id
   }
 }
@@ -24,9 +26,16 @@ export const getData = async ctx => {
 
 const Index = () => {
   const { data } = useRouteContext()
+  const setTitle = useViewerHeaderTitle()[1]
+
+  useEffect(() => {
+    setTitle(data.result.title)
+  }, [setTitle])
+
+
 
   return (
-    <Viewer images={data.results} />
+    <Viewer images={data.result.images} />
 
   )
 }
