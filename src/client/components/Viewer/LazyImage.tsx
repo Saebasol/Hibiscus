@@ -1,14 +1,17 @@
-import React, { useEffect, useState, useRef, useMemo } from 'react'
-import { Flex, Skeleton } from '@radix-ui/themes'
+import React, { useEffect, useState, useRef, useMemo, useCallback } from 'react'
+import { Flex, Skeleton, Button, Text } from '@radix-ui/themes'
+import { ReloadIcon } from '@radix-ui/react-icons'
 import { type LazyImageProps } from './types'
 
 const LazyImage = ({ src, alt, index, dimensions, screenSize }: LazyImageProps) => {
   const [isLoaded, setIsLoaded] = useState(false)
   const [isInView, setIsInView] = useState(false)
   const [hasError, setHasError] = useState(false)
+  const [retryCount, setRetryCount] = useState(0)
+  const [isRetrying, setIsRetrying] = useState(false)
 
   const imgRef = useRef<HTMLDivElement>(null)
-
+  const MAX_RETRY_COUNT = 3
 
   useEffect(() => {
     if ([0, 1, 2].includes(index)) {
@@ -37,11 +40,27 @@ const LazyImage = ({ src, alt, index, dimensions, screenSize }: LazyImageProps) 
 
   const handleLoad = (event: React.SyntheticEvent<HTMLImageElement>) => {
     setIsLoaded(true)
+    setHasError(false)
+    setIsRetrying(false)
   }
 
-  const handleError = () => {
-    setHasError(true)
-    setIsLoaded(true)
+  const handleError = useCallback(() => {
+    if (retryCount < MAX_RETRY_COUNT) {
+      setIsRetrying(true)
+      setTimeout(() => {
+        setRetryCount(prev => prev + 1)
+      }, 1000)
+    } else {
+      setHasError(true)
+      setIsRetrying(false)
+    }
+  }, [retryCount])
+
+  const handleManualRetry = () => {
+    setHasError(false)
+    setIsLoaded(false)
+    setRetryCount(0)
+    setIsRetrying(false)
   }
 
   const optimalSize = useMemo(() => {
@@ -67,15 +86,38 @@ const LazyImage = ({ src, alt, index, dimensions, screenSize }: LazyImageProps) 
       width={`${optimalSize.width}px`}
       height={`${optimalSize.height}px`}
     >
-      {!isLoaded && !hasError && (
+      {!isLoaded && !hasError && !isRetrying && (
         <Skeleton
           width={`${optimalSize.width}px`}
           height={`${optimalSize.height}px`}
         />
       )}
 
-      {isInView && (
+      {isRetrying && !hasError && (
+        <Flex direction="column" align="center" gap="3" p="4">
+          <Skeleton
+            width="60px"
+            height="60px"
+          />
+          <Text size="2" color="gray">
+            다시 시도 중... ({retryCount + 1}/{MAX_RETRY_COUNT})
+          </Text>
+        </Flex>
+      )}
+
+      {hasError && (
+        <Flex direction="column" align="center" gap="3" p="4">
+          <Text size="2" color="gray">이미지를 불러올 수 없습니다</Text>
+          <Button variant="soft" onClick={handleManualRetry}>
+            <ReloadIcon />
+            다시 시도
+          </Button>
+        </Flex>
+      )}
+
+      {isInView && !hasError && (
         <img
+          key={`${alt}-${retryCount}`}
           src={src}
           alt={alt}
           onLoad={handleLoad}
@@ -83,17 +125,14 @@ const LazyImage = ({ src, alt, index, dimensions, screenSize }: LazyImageProps) 
           width="100%"
           height="100%"
           style={{
-            display: isLoaded && !hasError ? 'block' : 'none',
+            display: isLoaded ? 'block' : 'none',
             objectFit: 'contain',
             objectPosition: 'center',
           }}
         />
       )}
-
-
     </Flex>
   )
 }
-
 
 export default LazyImage
