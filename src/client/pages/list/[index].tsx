@@ -2,10 +2,9 @@
 import { useRouteContext } from '@fastify/react/client'
 import InfoCard from '../../components/Info'
 import { Flex } from '@radix-ui/themes'
-import { List, type RawListData } from '@saebasol/delphinium'
+import { type RawListData } from '@saebasol/delphinium'
 import Pagenator from '../../components/Pagenator'
 import { useNavigate } from 'react-router'
-import { useEffect } from 'react'
 
 
 // @ts-ignore

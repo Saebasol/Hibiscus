@@ -9,7 +9,6 @@ export const useViewerModeWithLocalStorage = () => {
   const [viewerMode, setViewerMode] = useToggleViewerMode();
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // 초기 로드
   useEffect(() => {
     const savedMode = localStorage.getItem("viewerMode");
     if (savedMode !== null) {
@@ -18,7 +17,6 @@ export const useViewerModeWithLocalStorage = () => {
     setIsLoaded(true);
   }, [setViewerMode]);
 
-  // 로드 완료 후 상태 변경 시에만 저장
   useEffect(() => {
     if (isLoaded) {
       localStorage.setItem("viewerMode", viewerMode ? "page" : "normal");

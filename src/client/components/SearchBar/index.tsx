@@ -1,7 +1,6 @@
 
-import Tagify, { type AddEventData, type TagData } from '@yaireo/tagify';
+import { type AddEventData, type TagData } from '@yaireo/tagify';
 import Tags from '@yaireo/tagify/react'
-import { useEffect, useRef } from 'react';
 import '@yaireo/tagify/dist/tagify.css';
 import './index.css';
 

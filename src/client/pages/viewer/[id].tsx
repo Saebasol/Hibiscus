@@ -1,4 +1,3 @@
-import { useState, useEffect, useRef, useMemo } from 'react'
 // @ts-ignore
 import { useRouteContext } from '@fastify/react/client'
 import Viewer from '../../components/Viewer'
