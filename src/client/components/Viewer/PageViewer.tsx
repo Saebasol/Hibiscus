@@ -9,7 +9,6 @@ const PageViewer = ({ images }: ViewerProps) => {
   const { hash } = useLocation()
   const navigate = useNavigate()
 
-
   const visibleRange = useMemo(() => {
     const buffer = 2
     const start = Math.max(0, currentPage - buffer)
@@ -25,13 +24,6 @@ const PageViewer = ({ images }: ViewerProps) => {
   }
 
   useEffect(() => {
-    if (!hash) {
-      navigate(`#${currentPage + 1}`, { replace: false })
-    }
-  }, [currentPage, hash])
-
-
-  useEffect(() => {
     if (hash && images.length > 0) {
       const pageNumber = parseInt(hash.replace('#', ''))
       if (pageNumber >= 1 && pageNumber <= images.length) {
@@ -39,6 +31,12 @@ const PageViewer = ({ images }: ViewerProps) => {
       }
     }
   }, [hash, images.length])
+
+  useEffect(() => {
+    if (!hash && images.length > 0) {
+      navigate('#1', { replace: true })
+    }
+  }, [hash, images.length, navigate])
 
   return (
     <Flex
