@@ -41,8 +41,9 @@ await server.register((fastify) => {
 server.get('/internal/image/:index', async (request, reply) => {
   const { index } = request.params as { index: string }
 
-  const imageUrl = await heliotropeClient.hitomi.getImage({ id: Number(index) })
   const galleryInfo = await heliotropeClient.hitomi.getGalleryInfo({ id: Number(index) })
+  const imageUrl = await heliotropeClient.hitomi.getImage({ id: Number(index) })
+
 
   const imageUrls = imageUrl.files.map((url, i) => ({
     url: proxyImageUrl(url),
@@ -74,4 +75,4 @@ server.get('/internal/list/:index', async (request, reply) => {
 
 await server.vite.ready()
 
-await server.listen({ port: 3000 })
+await server.listen({ host: '0.0.0.0', port: 3000 })
