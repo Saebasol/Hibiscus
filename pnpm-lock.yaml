@@ -26,6 +26,9 @@ importers:
       '@radix-ui/themes':
         specifier: ^3.2.1
         version: 3.2.1(@types/react-dom@19.1.5(@types/react@19.1.6))(@types/react@19.1.6)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@saebasol/delphinium':
+        specifier: ^1.0.0
+        version: 1.0.0
       '@unhead/react':
         specifier: ^2.0.8
         version: 2.0.10(react@19.1.0)
@@ -1263,6 +1266,9 @@ packages:
     resolution: {integrity: sha512-Wq2zpapRYLfi4aKxf2Xff0tN+7slj2d4R87WEzqw7ZLsVvO5zwYCIuEGSZYiK41+GlwUo1HiR+GdkLEJnCKTCw==}
     cpu: [x64]
     os: [win32]
+
+  '@saebasol/delphinium@1.0.0':
+    resolution: {integrity: sha512-elRXqgwgtjEphCPcavjWLFAiYEcv9KXHFeQ8oPJb8X37yt08xZsoyjFecToja92jZS3V9jFbftP0duHZcuif5g==}
 
   '@types/babel__core@7.20.5':
     resolution: {integrity: sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==}
@@ -3390,6 +3396,8 @@ snapshots:
 
   '@rollup/rollup-win32-x64-msvc@4.41.1':
     optional: true
+
+  '@saebasol/delphinium@1.0.0': {}
 
   '@types/babel__core@7.20.5':
     dependencies:
