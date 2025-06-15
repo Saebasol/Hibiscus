@@ -1,10 +1,19 @@
-import { Navigate } from "react-router"
+import { useEffect } from "react"
+import { useNavigate } from "react-router"
+import { Flex, Spinner } from "@radix-ui/themes"
 
 const Index = () => {
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    navigate("/list/1", { replace: true })
+  }, [navigate])
+
   return (
-    <Navigate to="/list/1" replace />
+    <Flex align="center" justify="center" height="100vh">
+      <Spinner />
+    </Flex>
   )
 }
-
 
 export default Index
