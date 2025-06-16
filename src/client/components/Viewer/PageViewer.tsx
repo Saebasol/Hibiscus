@@ -16,10 +16,14 @@ const PageViewer = ({ images }: ViewerProps) => {
     return { start, end }
   }, [currentPage, images.length])
 
+  const isLastPage = currentPage === images.length - 1
+
 
   const goToNextPage = () => {
+    if (isLastPage) {
+      return
+    }
     const nextPage = (currentPage + 1) % images.length
-    setCurrentPage(nextPage)
     navigate(`#${nextPage + 1}`, { replace: false })
   }
 
