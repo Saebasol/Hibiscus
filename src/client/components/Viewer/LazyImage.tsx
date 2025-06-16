@@ -26,7 +26,7 @@ const LazyImage = ({ src, alt, index, dimensions, screenSize }: LazyImageProps) 
         }
       },
       {
-        threshold: 0.1,
+        threshold: 0.5,
         rootMargin: '0px 0px 75% 0px'
       }
     )
