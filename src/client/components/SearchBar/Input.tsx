@@ -84,6 +84,9 @@ const SearchInput = () => {
           mode: "mix",
           transformTag: transformTag,
           pattern: pattern,
+          dropdown: {
+            enabled: 0
+          },
           validate: (tag: TagData) => {
             return pattern.test(tag.value);
           },
