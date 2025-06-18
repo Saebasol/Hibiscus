@@ -8,7 +8,7 @@ import { Box } from '@radix-ui/themes';
 import { useSearchInputData } from './context';
 
 
-const pattern = /(female|male|tag|artist|character|group|type):/;
+const pattern = /female:|male:|tag:|artist:|character:|group:|type:/
 
 const scrolltoCarret = (e: CustomEvent<AddEventData<TagData>>) => {
   const dom = e.detail.tagify.DOM
@@ -21,12 +21,8 @@ const SearchInput = () => {
   const [searchInputData, setSearchInputData] = useSearchInputData();
 
   const transformTag = (tag: TagData) => {
-    if (tag.prefix) {
-      const cleanValue = tag.value.replace(pattern, '');
-
-      if (!tag.value.startsWith(tag.prefix)) {
-        tag.value = tag.prefix + cleanValue;
-      }
+    if (tag.prefix && !tag.value.startsWith(tag.prefix)) {
+      tag.value = tag.prefix + tag.value;
     }
 
     if (tag.value.startsWith("female:")) {
@@ -85,7 +81,7 @@ const SearchInput = () => {
           transformTag: transformTag,
           pattern: pattern,
           dropdown: {
-            enabled: 0
+            enabled: 1
           },
           validate: (tag: TagData) => {
             return pattern.test(tag.value);
