@@ -1,7 +1,7 @@
 import { resolve } from 'node:path'
 import Fastify from 'fastify'
 import FastifyVite from '@fastify/vite'
-import { HeliotropeClient, type RawListData } from '@saebasol/delphinium'
+import { HeliotropeClient, type RawListData, type RawSearchResultData } from '@saebasol/delphinium'
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -72,7 +72,16 @@ server.get('/internal/list/:index', async (request, reply) => {
   } catch (error) {
     return reply.status(500).send({ error: error })
   }
+})
 
+server.post('/internal/search', async (request, reply) => {
+  const { query, offset } = request.body as { query: string[]; offset: number }
+  try {
+    const response = await heliotropeClient.hitomi.postSearch({ query, offset })
+    return reply.status(200).send(response)
+  } catch (error) {
+    return reply.status(500).send({ error: error })
+  }
 })
 
 await server.vite.ready()

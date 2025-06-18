@@ -1,5 +1,6 @@
 import { Box, Flex, Heading } from "@radix-ui/themes";
 import SearchBar from "./SearchBar";
+import SearchDialog from "./SearchBar/Dialog";
 
 const Header = () => {
   return (

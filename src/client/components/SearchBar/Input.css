@@ -1,0 +1,96 @@
+/* TODO: handle light theme */
+.tagify {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    flex-direction: row;
+    overflow-x: auto;
+    border-radius: max(var(--radius-3));
+    box-shadow: inset 0 0 0 1px var(--gray-a7);
+    box-sizing: border-box;
+    background-color: var(--color-surface);
+    background-clip: content-box;
+    color: var(--gray-12);
+    height: var(--space-7);
+    padding: 1px;
+    width: 100%;
+
+    --placeholder-color: var(--gray-8);
+    --placeholder-color-focus: var(--gray-8);
+
+    --tags-border-color: none;
+    --tags-hover-border-color: none;
+
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+
+
+}
+
+/* ===== Tagify state style ===== */
+.tagify--focus {
+    outline-style: solid;
+    outline-color: var(--focus-8);
+    outline-width: 2px;
+    outline-offset: -1px;
+}
+
+.tagify--mix .tagify__input {
+    padding: 5px;
+    display: inline-flex;
+    align-items: center;
+    height: auto;
+    text-wrap-mode: nowrap;
+}
+
+.tagify--empty .tagify__input::before {
+    transition: none;
+    align-self: anchor-center;
+    text-align: center;
+}
+
+/* ===== Tagify tag ===== */
+.tagify__tag {
+    flex-shrink: 0;
+}
+
+.tagify__color_tag {
+    --tag-bg: var(--accent-9);
+    --tag-text-color: var(--accent-contrast);
+    --tag-hover: var(--accent-6);
+    --tag-text-color--edit: var(--accent-contrast);
+    --tag-remove-btn-color: var(--accent-contrast);
+}
+
+/* ===== Search wraaper ===== */
+.search-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray-9);
+    z-index: 10;
+    pointer-events: none;
+    width: 16px;
+    height: 16px;
+}
+
+.search-wrapper .tagify__input {
+    margin-left: 40px !important;
+}
+
+
+/* 현재 DOM 구조에 맞게 수정 */
+/* .search-wrapper:has(.tagify:not(.tagify--empty)) .search-icon {
+    opacity: 0;
+} */

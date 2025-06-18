@@ -32,8 +32,6 @@ const Index = () => {
     setTitle(data.result.title)
   }, [setTitle])
 
-
-
   return (
     <Viewer images={data.result.images} />
 

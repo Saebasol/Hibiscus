@@ -1,42 +1,43 @@
 
-import { type AddEventData, type TagData } from '@yaireo/tagify';
-import Tags from '@yaireo/tagify/react'
-import '@yaireo/tagify/dist/tagify.css';
-import './index.css';
+import { TextField } from '@radix-ui/themes';
+import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
+import { useOpenSearchDialog } from './context';
+import SearchDialog from './Dialog';
+import { useState } from 'react';
 
 
 const SearchBar = () => {
-  const getAutoCompleteResource = () => {
-  }
-
-  const transeformTag = (tag: TagData) => {
-    if (tag.value.startsWith("female:")) {
-      tag["data-accent-color"] = "ruby";
-    }
-    else if (tag.value.startsWith("male:")) {
-      tag["data-accent-color"] = "blue";
-    }
-    else {
-      tag["data-accent-color"] = "gray";
-    }
-    tag.class = "tagify__color_tag";
-
-  }
-
-  const scrolltoCarret = (e: CustomEvent<AddEventData<TagData>>) => {
-    const dom = e.detail.tagify.DOM
-    dom.scope.scrollLeft = dom.scope.scrollWidth;
-
-  }
+  const setOpenSearchDialog = useOpenSearchDialog()[1];
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <Tags
-      settings={{
-        transformTag: transeformTag,
-      }}
-      onAdd={scrolltoCarret}
-
-    />
+    <>
+      <TextField.Root
+        size="3"
+        placeholder="Search the works..."
+        onClick={(e) => {
+          e.preventDefault()
+          setOpenSearchDialog(true)
+        }}
+        onKeyDown={(e) => e.preventDefault()}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        style={{
+          userSelect: 'none',
+          caretColor: 'transparent',
+          outlineStyle: isHovered ? 'solid' : 'none',
+          outlineColor: isHovered ? 'var(--focus-8)' : 'transparent',
+          outlineWidth: isHovered ? '2px' : '0',
+          outlineOffset: isHovered ? '-1px' : '0',
+        }}
+        aria-haspopup="dialog"
+      >
+        <TextField.Slot>
+          <MagnifyingGlassIcon height="16" width="16" />
+        </TextField.Slot>
+      </TextField.Root >
+      <SearchDialog />
+    </>
   );
 }
 
