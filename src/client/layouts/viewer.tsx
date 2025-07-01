@@ -4,7 +4,7 @@ import ViewerHeader from "../components/Viewer/Header";
 
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
   const headerSize = 4 * 16
   const footerSize = 4 * 16
   const hideTimerRef = useRef<number | undefined>(undefined)
