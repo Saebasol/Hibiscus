@@ -89,7 +89,7 @@ server.get('/internal/tags', async (request, reply) => {
     const response = await heliotropeClient.hitomi.getTags(
       AbortSignal.timeout(10000)
     )
-    return reply.status(200).header('Cache-Control', 'public, max-age=31536000 immutable').send(response)
+    return reply.status(200).header('Cache-Control', 'public, max-age=31536000').send(response)
   } catch (error) {
     return reply.status(500).send({ error: error })
   }
