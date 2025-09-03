@@ -84,6 +84,17 @@ server.post('/internal/search', async (request, reply) => {
   }
 })
 
+server.get('/internal/tags', async (request, reply) => {
+  try {
+    const response = await heliotropeClient.hitomi.getTags(
+      AbortSignal.timeout(10000)
+    )
+    return reply.status(200).header('Cache-Control', 'public, max-age=31536000 immutable').send(response)
+  } catch (error) {
+    return reply.status(500).send({ error: error })
+  }
+})
+
 await server.vite.ready()
 
 await server.listen({ host: '0.0.0.0', port: 3000 })

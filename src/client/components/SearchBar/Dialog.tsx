@@ -1,7 +1,7 @@
 import { Cross1Icon } from "@radix-ui/react-icons";
 import { Dialog, Flex, IconButton, RadioCards, ScrollArea, Text, VisuallyHidden } from "@radix-ui/themes";
 import { useOpenSearchDialog, useSearchInputData } from "./context";
-import SearchInput from "./Input";
+import SearchInput, { pattern } from "./Input";
 import { useEffect, useState } from "react";
 import type { RawSearchResultData } from "@saebasol/delphinium";
 import SearchResultItem from "./ResultItem";
@@ -28,7 +28,7 @@ const SearchDialog = () => {
       ...searchInputData.tags,
     ]
 
-    if (searchInputData.title) {
+    if (searchInputData.title && !pattern.test(searchInputData.title)) {
       query.push(searchInputData.title);
     }
 

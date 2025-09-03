@@ -20,6 +20,7 @@
 
     --tags-border-color: none;
     --tags-hover-border-color: none;
+    --tags-disabled-bg: var(--color-background);
 
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -37,6 +38,12 @@
     outline-color: var(--focus-8);
     outline-width: 2px;
     outline-offset: -1px;
+}
+
+.tagify[disabled] {
+    opacity: 1;
+    cursor: not-allowed;
+    pointer-events: auto;
 }
 
 .tagify--mix .tagify__input {
@@ -75,7 +82,7 @@
 
 .search-icon {
     position: absolute;
-    left: 12px;
+    left: 15px;
     top: 50%;
     transform: translateY(-50%);
     color: var(--gray-9);
