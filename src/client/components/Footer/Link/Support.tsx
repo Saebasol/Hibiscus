@@ -7,7 +7,7 @@ const FooterLinkSupport = () => {
         Support
       </Heading>
       <Flex direction="column" gap="1">
-        <Link size="2" color="gray" href="#">Report Issues</Link>
+        <Link size="2" color="gray" href="https://github.com/Saebasol/Hibiscus/issues">Report Issues</Link>
       </Flex>
     </Box>
   )
