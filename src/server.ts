@@ -19,7 +19,7 @@ const proxyImageUrl = (url: string) => `${heliotropeClient.baseURL}/proxy/${enco
 
 const proxyThumbnailUrl = async (id: number) => {
   const thumbnail = await heliotropeClient.hitomi.getThumbnail({ id, size: "smallbig", single: true })
-  return proxyImageUrl(thumbnail.url[0])
+  return proxyImageUrl(thumbnail[0].url)
 }
 
 const server = Fastify({
@@ -45,16 +45,14 @@ await server.register((fastify) => {
 
 server.get('/internal/image/:index', async (request, reply) => {
   const { index } = request.params as { index: string }
-
   const galleryInfo = await heliotropeClient.hitomi.getGalleryInfo({ id: Number(index) })
   const imageUrl = await heliotropeClient.hitomi.getImage({ id: Number(index) })
 
-
-  const imageUrls = imageUrl.files.map((item, i) => ({
+  const imageUrls = imageUrl.map((item, i) => ({
     url: proxyImageUrl(item.url),
     dimensions: {
-      width: galleryInfo.files[i].width,
-      height: galleryInfo.files[i].height
+      width: item.file.width,
+      height: item.file.height
     }
   }))
 
