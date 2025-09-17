@@ -66,13 +66,17 @@ server.get('/internal/list/:index', async (request, reply) => {
   const { index } = request.params as { index: string }
   try {
     const response = await heliotropeClient.hitomi.getList({ id: Number(index) })
-    const copied: RawListData = JSON.parse(JSON.stringify(response))
-    copied.list = await Promise.all(copied.list.map(async item => ({
-      ...item,
-      thumbnail: await proxyThumbnailUrl(item.id),
-    }))
-    )
-    return reply.status(200).send(copied)
+    const thumbnailPromises = response.list.map(item => proxyThumbnailUrl(item.id))
+    const thumbnails = await Promise.all(thumbnailPromises)
+    const result = {
+      ...response,
+      list: response.list.map((item, idx) => ({
+        ...item,
+        thumbnail: thumbnails[idx]
+      }))
+    }
+
+    return reply.status(200).send(result)
   } catch (error) {
     return reply.status(500).send({ error: error })
   }
