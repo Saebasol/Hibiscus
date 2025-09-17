@@ -1,7 +1,7 @@
 import { resolve } from 'node:path'
 import Fastify from 'fastify'
 import FastifyVite from '@fastify/vite'
-import { HeliotropeClient, type RawListData } from '@saebasol/delphinium'
+import { HeliotropeClient } from '@saebasol/delphinium'
 
 declare module 'fastify' {
   interface FastifyRequest {
