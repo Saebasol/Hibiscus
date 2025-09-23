@@ -15,7 +15,7 @@ export const getData = async ctx => {
 
   if (!response.ok) {
     return {
-      results: { list: [], total: 0 } as RawListData,
+      results: { list: [], count: 0 } as RawListData,
       index: index
     }
   }
@@ -53,7 +53,7 @@ const Index = () => {
         ))
       }
       <Pagenator
-        count={data.results.total}
+        count={data.results.count}
         currentPage={Number(data.index)}
         onPageChange={onPageChange}
       />
