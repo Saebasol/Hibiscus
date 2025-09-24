@@ -3,6 +3,8 @@ import Fastify from 'fastify'
 import FastifyVite from '@fastify/vite'
 import { HeliotropeClient } from '@saebasol/delphinium'
 
+import { env } from 'node:process'
+
 declare module 'fastify' {
   interface FastifyRequest {
     baseUrl: string;
@@ -10,7 +12,7 @@ declare module 'fastify' {
 }
 
 const heliotropeClient = new HeliotropeClient({
-  baseURL: 'https://heliotrope.saebasol.org/api',
+  baseURL: env.HELIOTROPE_BASE_URL || 'https://heliotrope.saebasol.org/api',
   timeout: 5000 // Optional timeout
 })
 
