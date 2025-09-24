@@ -39,11 +39,9 @@ await server.register(FastifyVite, {
   renderer: '@fastify/react',
 })
 
-await server.register((fastify) => {
-  fastify.addHook('onRequest', async (request, reply) => {
-    request.baseUrl = `${request.protocol}://${request.headers.host}`;
-  });
-})
+server.addHook('onRequest', async (request, reply) => {
+  request.baseUrl = `${request.protocol}://${request.headers.host}`;
+});
 
 server.get('/internal/image/:index', async (request, reply) => {
   const { index } = request.params as { index: string }
