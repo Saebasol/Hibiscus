@@ -16,12 +16,12 @@ const heliotropeClient = new HeliotropeClient({
   timeout: 5000 // Optional timeout
 })
 
-const proxyImageUrl = (url: string) => `${heliotropeClient.baseURL}/proxy/${encodeURIComponent(url)}`
+const proxyImageUrl = (baseUrl: string, url: string) => `${baseUrl}/proxy/${encodeURIComponent(url)}`
 
 
-const proxyThumbnailUrl = async (id: number) => {
+const proxyThumbnailUrl = async (baseUrl: string, id: number) => {
   const thumbnail = await heliotropeClient.hitomi.getThumbnail({ id, size: "smallbig", single: true })
-  return proxyImageUrl(thumbnail[0].url)
+  return proxyImageUrl(baseUrl, thumbnail[0].url)
 }
 
 const server = Fastify({
@@ -51,7 +51,7 @@ server.get('/internal/image/:index', async (request, reply) => {
   const imageUrl = await heliotropeClient.hitomi.getImage({ id: Number(index) })
 
   const imageUrls = imageUrl.map((item, i) => ({
-    url: proxyImageUrl(item.url),
+    url: proxyImageUrl(request.baseUrl, item.url),
     dimensions: {
       width: item.file.width,
       height: item.file.height
@@ -68,7 +68,7 @@ server.get('/internal/list/:index', async (request, reply) => {
   const { index } = request.params as { index: string }
   try {
     const response = await heliotropeClient.hitomi.getList({ id: Number(index) })
-    const thumbnailPromises = response.list.map(item => proxyThumbnailUrl(item.id))
+    const thumbnailPromises = response.list.map(item => proxyThumbnailUrl(request.baseUrl, item.id))
     const thumbnails = await Promise.all(thumbnailPromises)
     const result = {
       ...response,
