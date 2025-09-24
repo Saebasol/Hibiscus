@@ -16,7 +16,7 @@ const heliotropeClient = new HeliotropeClient({
   timeout: 5000 // Optional timeout
 })
 
-const proxyImageUrl = (baseUrl: string, url: string) => `${baseUrl}/proxy/${encodeURIComponent(url)}`
+const proxyImageUrl = (baseUrl: string, url: string) => `${baseUrl}/internal/proxy/${encodeURIComponent(url)}`
 
 
 const proxyThumbnailUrl = async (baseUrl: string, id: number) => {
@@ -29,7 +29,8 @@ const server = Fastify({
     transport: {
       target: '@fastify/one-line-logger'
     }
-  }
+  },
+  maxParamLength: 1000,
 })
 
 await server.register(FastifyVite, {
@@ -97,9 +98,27 @@ server.get('/internal/tags', async (request, reply) => {
     const response = await heliotropeClient.hitomi.getTags(
       AbortSignal.timeout(10000)
     )
-    return reply.status(200).header('Cache-Control', 'public, max-age=31536000 immutable').send(response)
+    return reply.status(200).header('cache-control', 'public, max-age=31536000 immutable').send(response)
   } catch (error) {
-    return reply.status(500).header('Cache-Control', 'no-store').send({ error: error })
+    return reply.status(500).header('cache-control', 'no-store').send({ error: error })
+  }
+})
+
+server.get('/internal/proxy/:url', async (request, reply) => {
+  const { url } = request.params as { url: string }
+  try {
+    const response = await fetch(heliotropeClient.baseURL + '/proxy/' + encodeURIComponent(url), {
+      signal: AbortSignal.timeout(10000)
+    })
+    if (!response.ok) {
+      return reply.status(response.status).send({ error: 'Failed to fetch image' })
+    }
+
+    const contentType = response.headers.get('Content-Type')
+    return reply.status(200).header('Content-Type', contentType).header('Cache-Control', 'public, max-age=86400').send(response.body)
+
+  } catch (error) {
+    return reply.status(500).send({ error: error })
   }
 })
 
