@@ -1,7 +1,7 @@
 import { resolve } from 'node:path'
 import Fastify from 'fastify'
 import FastifyVite from '@fastify/vite'
-import { HeliotropeClient } from '@saebasol/delphinium'
+import { HeliotropeClient, Size } from '@saebasol/delphinium'
 
 import { env } from 'node:process'
 
@@ -20,7 +20,7 @@ const proxyImageUrl = (baseUrl: string, url: string) => `${baseUrl}/internal/pro
 
 
 const proxyThumbnailUrl = async (baseUrl: string, id: number) => {
-  const thumbnail = await heliotropeClient.hitomi.getThumbnail({ id, size: "smallbig", single: true })
+  const thumbnail = await heliotropeClient.hitomi.getThumbnail({ id, size: Size.SMALLBIG, single: true })
   return proxyImageUrl(baseUrl, thumbnail[0].url)
 }
 
@@ -66,12 +66,12 @@ server.get('/internal/image/:index', async (request, reply) => {
 server.get('/internal/list/:index', async (request, reply) => {
   const { index } = request.params as { index: string }
   try {
-    const response = await heliotropeClient.hitomi.getList({ id: Number(index) })
-    const thumbnailPromises = response.list.map(item => proxyThumbnailUrl(request.baseUrl, item.id))
+    const response = await heliotropeClient.hitomi.getList({ index: Number(index) })
+    const thumbnailPromises = response.items.map(item => proxyThumbnailUrl(request.baseUrl, item.id))
     const thumbnails = await Promise.all(thumbnailPromises)
     const result = {
       ...response,
-      list: response.list.map((item, idx) => ({
+      list: response.items.map((item, idx) => ({
         ...item,
         thumbnail: thumbnails[idx]
       }))
