@@ -2,7 +2,7 @@
 import { useRouteContext } from '@fastify/react/client'
 import InfoCard from '../../components/Info'
 import { Flex } from '@radix-ui/themes'
-import { type RawListData } from '@saebasol/delphinium'
+import { type RawListResultDTOData } from '@saebasol/delphinium'
 import Pagenator from '../../components/Pagenator'
 import { useNavigate } from 'react-router'
 
@@ -15,7 +15,7 @@ export const getData = async ctx => {
 
   if (!response.ok) {
     return {
-      results: { list: [], count: 0 } as RawListData,
+      results: { items: [], count: 0 } as RawListResultDTOData,
       index: index
     }
   }
@@ -29,7 +29,7 @@ export const getData = async ctx => {
 }
 
 const Index = () => {
-  const { data }: { data: { results: RawListData, index: number } } = useRouteContext()
+  const { data }: { data: { results: RawListResultDTOData, index: number } } = useRouteContext()
   const navigate = useNavigate()
 
   const onPageChange = (page: number) => {
@@ -45,7 +45,7 @@ const Index = () => {
       align="center"
     >
       {
-        data.results.list.map((item) => (
+        data.results.items.map((item) => (
           <InfoCard
             key={item.id}
             infoData={item}
