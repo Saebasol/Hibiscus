@@ -18,7 +18,7 @@ const SearchDialog = () => {
   const performSearch = async () => {
     if (!searchInputData.title.trim() && searchInputData.tags.length === 0) {
       setSearchResults({
-        result: [],
+        results: [],
         count: 0,
       });
       return;
@@ -55,7 +55,7 @@ const SearchDialog = () => {
     } catch (error) {
       console.error('Error during search:', error);
       setSearchResults({
-        result: [],
+        results: [],
         count: 0,
       });
     }
@@ -103,8 +103,8 @@ const SearchDialog = () => {
               }}
             >
               {
-                searchResults?.result && searchResults.result.length > 0 ?
-                  searchResults.result.map((item) => (
+                searchResults?.results && searchResults.results.length > 0 ?
+                  searchResults.results.map((item) => (
                     <SearchResultItem
                       key={item.id}
                       id={item.id}

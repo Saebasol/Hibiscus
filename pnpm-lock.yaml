@@ -27,8 +27,8 @@ importers:
         specifier: ^3.2.1
         version: 3.2.1(@types/react-dom@19.2.0(@types/react@19.2.0))(@types/react@19.2.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@saebasol/delphinium':
-        specifier: ^1.6.0
-        version: 1.6.0
+        specifier: ^1.7.0
+        version: 1.7.0
       '@unhead/react':
         specifier: ^2.0.17
         version: 2.0.17(react@19.2.0)
@@ -1289,8 +1289,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@saebasol/delphinium@1.6.0':
-    resolution: {integrity: sha512-RVnyMOdA8N5+A3wtKTYZBc1r9dEVvlzjTmU+7rHwZwq76CSKg6wCXJHkQZpfEWL+Cu0TFtdM4YAHNfsaxTheeQ==}
+  '@saebasol/delphinium@1.7.0':
+    resolution: {integrity: sha512-BMzRk1+xONEivLazj017c2UPG08rf/0MWpgmxp4ncTJFYb5b5/oAJULCz4pK1zsVo/c8r/nzcwXenAvW/+Di7g==}
 
   '@types/babel__core@7.20.5':
     resolution: {integrity: sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==}
@@ -3432,7 +3432,7 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.52.4':
     optional: true
 
-  '@saebasol/delphinium@1.6.0': {}
+  '@saebasol/delphinium@1.7.0': {}
 
   '@types/babel__core@7.20.5':
     dependencies:
