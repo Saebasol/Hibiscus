@@ -71,7 +71,7 @@ server.get('/internal/list/:index', async (request, reply) => {
     const thumbnails = await Promise.all(thumbnailPromises)
     const result = {
       ...response,
-      list: response.items.map((item, idx) => ({
+      items: response.items.map((item, idx) => ({
         ...item,
         thumbnail: thumbnails[idx]
       }))
