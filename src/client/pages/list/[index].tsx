@@ -15,21 +15,21 @@ export const getData = async ctx => {
 
   if (!response.ok) {
     return {
-      results: { items: [], count: 0 } as RawListResultDTOData,
+      result: { items: [], count: 0 } as RawListResultDTOData,
       index: index
     }
   }
   const data = await response.json()
 
   return {
-    results: data,
+    result: data,
     index: index
   }
 
 }
 
 const Index = () => {
-  const { data }: { data: { results: RawListResultDTOData, index: number } } = useRouteContext()
+  const { data }: { data: { result: RawListResultDTOData, index: number } } = useRouteContext()
   const navigate = useNavigate()
 
   const onPageChange = (page: number) => {
@@ -45,7 +45,7 @@ const Index = () => {
       align="center"
     >
       {
-        data.results.items.map((item) => (
+        data.result.items.map((item) => (
           <InfoCard
             key={item.id}
             infoData={item}
@@ -53,7 +53,7 @@ const Index = () => {
         ))
       }
       <Pagenator
-        count={data.results.count}
+        count={data.result.count}
         currentPage={Number(data.index)}
         onPageChange={onPageChange}
       />

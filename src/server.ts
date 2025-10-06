@@ -76,7 +76,6 @@ server.get('/internal/list/:index', async (request, reply) => {
         thumbnail: thumbnails[idx]
       }))
     }
-
     return reply.status(200).send(result)
   } catch (error) {
     return reply.status(500).send({ error: error })
@@ -107,7 +106,7 @@ server.get('/internal/tags', async (request, reply) => {
 server.get('/internal/proxy/:url', async (request, reply) => {
   const { url } = request.params as { url: string }
   try {
-    const response = await fetch(heliotropeClient.baseURL + '/proxy/' + encodeURIComponent(url), {
+    const response = await fetch(heliotropeClient.baseURL + '/api/proxy/' + encodeURIComponent(url), {
       signal: AbortSignal.timeout(10000)
     })
     if (!response.ok) {
