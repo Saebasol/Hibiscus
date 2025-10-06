@@ -12,7 +12,7 @@ declare module 'fastify' {
 }
 
 const heliotropeClient = new HeliotropeClient({
-  baseURL: env.HELIOTROPE_BASE_URL || 'https://heliotrope.saebasol.org/api',
+  baseURL: env.HELIOTROPE_BASE_URL || 'https://heliotrope.saebasol.org',
   timeout: 5000 // Optional timeout
 })
 
