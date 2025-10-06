@@ -13,7 +13,7 @@ declare module 'fastify' {
 
 const heliotropeClient = new HeliotropeClient({
   baseURL: env.HELIOTROPE_BASE_URL || 'https://heliotrope.saebasol.org',
-  timeout: 5000 // Optional timeout
+  timeout: 10000 // Optional timeout
 })
 
 const proxyImageUrl = (baseUrl: string, url: string) => `${baseUrl}/internal/proxy/${encodeURIComponent(url)}`
@@ -44,10 +44,10 @@ server.addHook('onRequest', async (request, reply) => {
   request.baseUrl = `${request.protocol}://${request.headers.host}`;
 });
 
-server.get('/internal/image/:index', async (request, reply) => {
-  const { index } = request.params as { index: string }
-  const galleryInfo = await heliotropeClient.hitomi.getGalleryInfo({ id: Number(index) })
-  const imageUrl = await heliotropeClient.hitomi.getImage({ id: Number(index) })
+server.get('/internal/image/:id', async (request, reply) => {
+  const { id } = request.params as { id: string }
+  const galleryInfo = await heliotropeClient.hitomi.getGalleryInfo({ id: Number(id) })
+  const imageUrl = await heliotropeClient.hitomi.getImage({ id: Number(id) })
 
   const imageUrls = imageUrl.map((item, i) => ({
     url: proxyImageUrl(request.baseUrl, item.url),
