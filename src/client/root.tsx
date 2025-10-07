@@ -16,30 +16,29 @@ const Root = ({ url, routes, head, ctxHydration, routeMap }: {
     <Theme appearance="dark" accentColor="ruby">
       <Suspense>
         <Router location={url}>
-          <Routes>
-            {routes.map(({ path, component: Component }) => (
-              <Route
-                key={path}
-                path={path}
-                element={
-                  <AppRoute
-                    //@ts-ignore
-                    head={head}
-                    ctxHydration={ctxHydration}
-                    ctx={routeMap[path]}
-                  >
+            <Routes>
+              {routes.map(({ path, component: Component }) => (
+                <Route
+                  key={path}
+                  path={path}
+                  element={
+                    <AppRoute
+                      //@ts-ignore
+                      head={head}
+                      ctxHydration={ctxHydration}
+                      ctx={routeMap[path]}
+                    >
 
-                    <Component />
+                      <Component />
 
-                  </AppRoute>
-                }
-              />
-            ))}
-          </Routes>
+                    </AppRoute>
+                  }
+                />
+              ))}
+            </Routes>
         </Router>
       </Suspense>
     </Theme >
-
   )
 }
 
