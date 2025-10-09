@@ -12,19 +12,20 @@ const BookmarkCard = ({ data, hideDelete, noURL }: { data: Bookmark, hideDelete?
     const { date, id, items, name, description } = data;
     const [thumbnailUrl, setThumbnailUrl] = useState(null);
     const [isLoading, setLoading] = useState(true);
-    const firstInfo: RawInfoData | null = items.length > 0 ? items[0] : null;
+    const firstItem: RawInfoData | null = items.length > 0 ? items[0] : null;
     const languages = new Set(data.items.map(e => e.language))
     const tags = [...new Set(data.items.map(e => e.tags).flat())].sort((a, b) => a.localeCompare(b));
 
     useEffect(() => {
-        if (!firstInfo?.id) return setLoading(false);
+        if (!firstItem?.id) return setLoading(false);
 
-        const req = fetch(`/internal/thumbnail/${firstInfo.id}`)
-        req.then((r) => r.json().then((d) => {
-            console.log(d)
-            setThumbnailUrl(d.url)
-            setLoading(false)
-        }))
+		// Run fetch
+		(async () => {
+			const req = await fetch(`/internal/thumbnail/${firstItem.id}`)
+			const json = await req.json()
+			setThumbnailUrl(json.url)
+			setLoading(false)
+		})()
     }, [])
 
     return <Box width="90%" pb="3">
