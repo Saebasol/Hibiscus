@@ -1,8 +1,11 @@
-import { Box, Flex, Heading } from "@radix-ui/themes";
+import { Box, Button, Flex, Heading } from "@radix-ui/themes";
 import SearchBar from "./SearchBar";
-import SearchDialog from "./SearchBar/Dialog";
+import { useNavigate } from "react-router";
+import { BookmarkIcon } from "@radix-ui/react-icons";
 
 const Header = () => {
+  const navigate = useNavigate()
+
   return (
     <>
       <Box
@@ -24,11 +27,14 @@ const Header = () => {
             height="100%"
             px="3"
           >
-            <Heading size="5" weight="bold">
+            <Heading size="5" weight="bold" onClick={() => navigate('/')}>
               Hibiscus
             </Heading>
 
-            <Flex gap="3">
+            <Flex gap="3" align="center" >
+              <Button color="gray" onClick={() => navigate("/bookmark")}>
+                  <BookmarkIcon />
+              </Button>
               <SearchBar />
             </Flex>
           </Flex>

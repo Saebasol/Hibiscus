@@ -2,7 +2,7 @@ import { CalendarIcon } from "@radix-ui/react-icons"
 import { Flex, Text } from "@radix-ui/themes"
 import { useEffect, useState } from "react"
 
-const InfoDate = ({ date }: { date: string }) => {
+const InfoDate = ({ date }: { date: string | number }) => {
   const [formatDate, setFormatDate] = useState("")
 
   useEffect(() => {
