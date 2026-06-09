@@ -30,10 +30,14 @@ const Index = () => {
 
   useEffect(() => {
     setTitle(data.result.title)
-  }, [setTitle])
+  }, [setTitle, data.result.title])
 
   return (
-    <Viewer images={data.result.images} />
+    <Viewer
+      images={data.result.images}
+      mangaId={String(data.id ?? data.result.id ?? data.result.title ?? "unknown")}
+      title={data.result.title}
+    />
 
   )
 }

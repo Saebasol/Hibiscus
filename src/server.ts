@@ -16,6 +16,20 @@ const heliotropeClient = new HeliotropeClient({
   timeout: 10000 // Optional timeout
 })
 
+const IMAGE_CACHE_TTL_MS = 5 * 60 * 1000
+const IMAGE_CACHE_MAX = 100
+const imageCache = new Map<number, {
+  expiresAt: number
+  payload: {
+    title: string
+    images: {
+      url: string
+      thumbnailUrl?: string
+      dimensions: { width: number; height: number }
+    }[]
+  }
+}>()
+
 const proxyImageUrl = (baseUrl: string, url: string) => `${baseUrl}/internal/proxy/${encodeURIComponent(url)}`
 
 
@@ -46,21 +60,47 @@ server.addHook('onRequest', async (request, reply) => {
 
 server.get('/internal/image/:id', async (request, reply) => {
   const { id } = request.params as { id: string }
-  const galleryInfo = await heliotropeClient.hitomi.getGalleryInfo({ id: Number(id) })
-  const imageUrl = await heliotropeClient.hitomi.getImage({ id: Number(id) })
+  const numericId = Number(id)
+  const cached = imageCache.get(numericId)
+  if (cached && cached.expiresAt > Date.now()) {
+    return reply
+      .status(200)
+      .header('cache-control', 'public, max-age=300')
+      .send(cached.payload)
+  }
+
+  const galleryInfo = await heliotropeClient.hitomi.getGalleryInfo({ id: numericId })
+  const imageUrl = await heliotropeClient.hitomi.getImage({ id: numericId })
+  const thumbnails = await heliotropeClient.hitomi.getThumbnail({ id: numericId, single: false, size: Size.SMALLSMALL })
 
   const imageUrls = imageUrl.map((item, i) => ({
     url: proxyImageUrl(request.baseUrl, item.url),
+    thumbnailUrl: thumbnails[i]?.url
+      ? proxyImageUrl(request.baseUrl, thumbnails[i].url)
+      : undefined,
     dimensions: {
       width: item.file.width,
       height: item.file.height
     }
   }))
 
-  return reply.status(200).send({
+  const payload = {
     title: galleryInfo.title,
     images: imageUrls,
-  })
+  }
+
+  imageCache.set(numericId, { expiresAt: Date.now() + IMAGE_CACHE_TTL_MS, payload })
+  if (imageCache.size > IMAGE_CACHE_MAX) {
+    const oldestKey = imageCache.keys().next().value
+    if (oldestKey !== undefined) {
+      imageCache.delete(oldestKey)
+    }
+  }
+
+  return reply
+    .status(200)
+    .header('cache-control', 'public, max-age=300')
+    .send(payload)
 })
 
 server.get('/internal/list/:index', async (request, reply) => {
