@@ -29,6 +29,10 @@ const Viewer = ({ images, mangaId, title, author }: ViewerProps) => {
     }));
   }, [images, mangaId]);
 
+  // 1. Viewer Initialization & Mount
+  // - Creates the comimi viewer instance and attaches it to the DOM container.
+  // - Reads the URL hash (#) on initial load to render the corresponding page.
+  // - Registers an event listener to update the URL hash whenever the page turns.
   useEffect(() => {
     const container = containerRef.current;
     if (!container || pages.length === 0 || viewerRef.current) {
@@ -39,6 +43,7 @@ const Viewer = ({ images, mangaId, title, author }: ViewerProps) => {
     const initialPageIndex = getHashPageIndex(initialHash, pages.length) ?? 0;
 
     currentPageIndexRef.current = initialPageIndex;
+    
     viewerRef.current = createMangaViewer(container, {
       manga: {
         id: mangaId,
@@ -55,6 +60,7 @@ const Viewer = ({ images, mangaId, title, author }: ViewerProps) => {
         pageChange: ({ pageIndex }) => {
           currentPageIndexRef.current = pageIndex;
           if (typeof window === "undefined") return;
+          
           const nextHash = `#${pageIndex + 1}`;
           if (window.location.hash !== nextHash) {
             window.history.replaceState(null, "", nextHash);
@@ -63,9 +69,12 @@ const Viewer = ({ images, mangaId, title, author }: ViewerProps) => {
         }
       }
     });
+    
     container.focus();
   }, [author, mangaId, title, pages]);
 
+  // 2. Viewer Instance Cleanup
+  // - Destroys the viewer instance when the component unmounts to prevent memory leaks.
   useEffect(() => {
     return () => {
       viewerRef.current?.destroy();
@@ -73,6 +82,9 @@ const Viewer = ({ images, mangaId, title, author }: ViewerProps) => {
     };
   }, []);
 
+  // 3. Manga Data Synchronization
+  // - Updates the viewer's internal data (title, author, pages) when props change,
+  //   without completely recreating the viewer instance.
   useEffect(() => {
     if (!viewerRef.current) return;
     viewerRef.current.setManga({
@@ -83,6 +95,9 @@ const Viewer = ({ images, mangaId, title, author }: ViewerProps) => {
     });
   }, [author, mangaId, title, pages]);
 
+  // 4. Programmatic Navigation
+  // - Forces the viewer to navigate to the target page when the 'hash' state changes.
+  // - Only triggers if the target page differs from the current page to prevent infinite loops.
   useEffect(() => {
     if (!viewerRef.current) return;
     const index = getHashPageIndex(hash, pages.length);
@@ -94,12 +109,18 @@ const Viewer = ({ images, mangaId, title, author }: ViewerProps) => {
     }
   }, [hash, pages.length]);
 
+  // 5. Browser History Tracking
+  // - Listens for 'hashchange' events triggered by the browser's 'Back' or 'Forward' buttons.
+  // - Synchronizes the React 'hash' state, which subsequently triggers the navigation effect (Hook 4).
   useEffect(() => {
     if (typeof window === "undefined") return;
+    
     setHash(window.location.hash);
+    
     const handleHashChange = () => {
       setHash(window.location.hash);
     };
+    
     window.addEventListener("hashchange", handleHashChange);
     return () => {
       window.removeEventListener("hashchange", handleHashChange);
