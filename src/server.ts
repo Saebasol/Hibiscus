@@ -2,6 +2,7 @@ import { resolve } from 'node:path'
 import Fastify from 'fastify'
 import FastifyVite from '@fastify/vite'
 import { HeliotropeClient, Size } from '@saebasol/delphinium'
+import { IMAGE_CACHE_MAX, IMAGE_CACHE_TTL_MS } from './client/utils/constant.js'
 
 import { env } from 'node:process'
 
@@ -16,8 +17,6 @@ const heliotropeClient = new HeliotropeClient({
   timeout: 10000 // Optional timeout
 })
 
-const IMAGE_CACHE_TTL_MS = 5 * 60 * 1000
-const IMAGE_CACHE_MAX = 100
 const imageCache = new Map<number, {
   expiresAt: number
   payload: {
