@@ -14,6 +14,7 @@ const Viewer = ({ images, mangaId, title, author }: ViewerProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const viewerRef = useRef<ReturnType<typeof createMangaViewer> | null>(null);
   const [hash, setHash] = useState("");
+  const currentPageIndexRef = useRef<number | null>(null);
 
   const pages = useMemo(() => {
     return images.map((image, index) => ({
@@ -37,6 +38,7 @@ const Viewer = ({ images, mangaId, title, author }: ViewerProps) => {
     const initialHash = typeof window === "undefined" ? "" : window.location.hash;
     const initialPageIndex = getHashPageIndex(initialHash, pages.length) ?? 0;
 
+    currentPageIndexRef.current = initialPageIndex;
     viewerRef.current = createMangaViewer(container, {
       manga: {
         id: mangaId,
@@ -51,6 +53,7 @@ const Viewer = ({ images, mangaId, title, author }: ViewerProps) => {
       locale: "en",
       events: {
         pageChange: ({ pageIndex }) => {
+          currentPageIndexRef.current = pageIndex;
           if (typeof window === "undefined") return;
           const nextHash = `#${pageIndex + 1}`;
           if (window.location.hash !== nextHash) {
@@ -60,6 +63,7 @@ const Viewer = ({ images, mangaId, title, author }: ViewerProps) => {
         }
       }
     });
+    container.focus();
   }, [author, mangaId, title, pages]);
 
   useEffect(() => {
@@ -83,7 +87,11 @@ const Viewer = ({ images, mangaId, title, author }: ViewerProps) => {
     if (!viewerRef.current) return;
     const index = getHashPageIndex(hash, pages.length);
     if (index === null) return;
-    viewerRef.current.goToPage(index);
+
+    if (currentPageIndexRef.current !== index) {
+      viewerRef.current.goToPage(index);
+      currentPageIndexRef.current = index;
+    }
   }, [hash, pages.length]);
 
   useEffect(() => {
@@ -103,7 +111,8 @@ const Viewer = ({ images, mangaId, title, author }: ViewerProps) => {
       ref={containerRef}
       style={{
         height: "100vh",
-        width: "100%"
+        width: "100%",
+        outline: "none"
       }}
       tabIndex={0}
     />
