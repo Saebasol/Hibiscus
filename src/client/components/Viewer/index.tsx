@@ -53,7 +53,8 @@ const Viewer = ({ images, mangaId, title, author }: ViewerProps) => {
       },
       initialPageIndex,
       settings: {
-        layoutMode: "browserFullscreen"
+        layoutMode: "browserFullscreen",
+        backgroundColor: "black",
       },
       locale: "en",
       events: {
