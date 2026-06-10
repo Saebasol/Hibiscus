@@ -30,7 +30,6 @@ const imageCache = new Map<number, {
 
 const proxyImageUrl = (baseUrl: string, url: string) => `${baseUrl}/internal/proxy/${encodeURIComponent(url)}`
 
-
 const proxyThumbnailUrl = async (baseUrl: string, id: number) => {
   const thumbnail = await heliotropeClient.hitomi.getThumbnail({ id, size: Size.SMALLBIG, single: true })
   return proxyImageUrl(baseUrl, thumbnail[0].url)
@@ -63,7 +62,7 @@ server.get('/internal/image/:id', async (request, reply) => {
   if (cached && cached.expiresAt > Date.now()) {
     return reply
       .status(200)
-      .header('cache-control', 'public, max-age=300')
+      .header('cache-control', `public, max-age=${Math.floor(IMAGE_CACHE_TTL_MS / 1000)}`)
       .send(cached.payload)
   }
 
@@ -97,7 +96,7 @@ server.get('/internal/image/:id', async (request, reply) => {
 
   return reply
     .status(200)
-    .header('cache-control', 'public, max-age=300')
+    .header('cache-control', `public, max-age=${Math.floor(IMAGE_CACHE_TTL_MS / 1000)}`)
     .send(payload)
 })
 
