@@ -2,9 +2,8 @@ import { resolve } from 'node:path'
 import Fastify from 'fastify'
 import FastifyVite from '@fastify/vite'
 import { HeliotropeClient, Size } from '@saebasol/delphinium'
-import { IMAGE_CACHE_MAX, IMAGE_CACHE_TTL_MS } from './client/utils/constant.js'
-
 import { env } from 'node:process'
+import { IMAGE_CACHE_TTL_MS, IMAGE_CACHE_MAX } from './shared/constants.js'
 
 declare module 'fastify' {
   interface FastifyRequest {
