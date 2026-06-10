@@ -13,7 +13,10 @@ export const getData = async ctx => {
   const response = await fetch(ctx.state.baseUrl + `/internal/image/${id}`)
 
   if (!response.ok) {
-    return { id: id, images: [] }
+    return {
+      result: { title: "Unknown", images: [] },
+      id: id
+    }
   }
   const data = await response.json()
 
@@ -22,7 +25,6 @@ export const getData = async ctx => {
     id: ctx.req.params.id
   }
 }
-
 
 const Index = () => {
   const { data } = useRouteContext()
@@ -38,7 +40,6 @@ const Index = () => {
       mangaId={String(data.id ?? data.result.id ?? data.result.title ?? "unknown")}
       title={data.result.title}
     />
-
   )
 }
 
