@@ -104,25 +104,17 @@ server.get('/internal/list/:index', async (request, reply) => {
   const { index } = request.params as { index: string }
   try {
     const response = await heliotropeClient.hitomi.getList({ index: Number(index) })
-    
-    const chunkSize = 10;
-    const thumbnails: (string | undefined)[] = [];
-    
-    for (let i = 0; i < response.items.length; i += chunkSize) {
-      const chunk = response.items.slice(i, i + chunkSize);
-      const chunkPromises = chunk.map(item => proxyThumbnailUrl(request.baseUrl, item.id));
-      const chunkResults = await Promise.all(chunkPromises);
-      thumbnails.push(...chunkResults);
-    }
+    return reply.status(200).send(response)
+  } catch (error) {
+    return reply.status(500).send({ error: error })
+  }
+})
 
-    const result = {
-      ...response,
-      items: response.items.map((item, idx) => ({
-        ...item,
-        thumbnail: thumbnails[idx]
-      }))
-    }
-    return reply.status(200).send(result)
+server.get('/internal/thumbnail/:id', async (request, reply) => {
+  const { id } = request.params as { id: string }
+  try {
+    const url = await proxyThumbnailUrl(request.baseUrl, Number(id))
+    return reply.status(200).send({ url })
   } catch (error) {
     return reply.status(500).send({ error: error })
   }

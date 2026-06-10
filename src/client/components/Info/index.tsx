@@ -39,7 +39,7 @@ const InfoCard = ({ infoData }: { infoData: RawInfoData }) => {
 
           <Flex direction={{ initial: 'column', sm: 'row' }} gap="4">
             <Flex align="center" justify="center" style={{ flexShrink: 0 }}>
-              <InfoThumbnail thumbnail={infoData.thumbnail} id={infoData.id} />
+              <InfoThumbnail id={infoData.id} />
             </Flex>
 
             <Flex direction="column" gap="3" >
