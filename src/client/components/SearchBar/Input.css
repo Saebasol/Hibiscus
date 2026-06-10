@@ -101,3 +101,9 @@
 /* .search-wrapper:has(.tagify:not(.tagify--empty)) .search-icon {
     opacity: 0;
 } */
+
+/* Radix Dialog 모달 모드에서 body에 pointer-events: none이 적용되어
+   tagify 드롭다운이 body 직계 자식이므로 상속받아 클릭 불가해지는 문제 수정 */
+.tagify__dropdown {
+    pointer-events: auto;
+}
