@@ -21,7 +21,7 @@ interface CustomTagify extends Tagify<TagData> {
   };
 }
 
-export const pattern = /-?(?:female:|male:|tag:|artist:|character:|group:|type:)/
+export const pattern = /-?(?:female:|male:|tag:|artist:|character:|group:|type:|series:|language:)/
 
 
 
@@ -148,11 +148,15 @@ const SearchInput = () => {
 
       const dropdown = tagifyRef.current.DOM?.dropdown;
       if (dropdown) {
-        dropdown.addEventListener('pointerdown', () => {
+        const handlePointerDown = () => {
           if (tagifyRef.current) {
             (tagifyRef.current as CustomTagify).state.actions.selectOption = true;
           }
-        });
+        };
+        dropdown.addEventListener('pointerdown', handlePointerDown);
+        return () => {
+          dropdown.removeEventListener('pointerdown', handlePointerDown);
+        };
       }
     }
 
