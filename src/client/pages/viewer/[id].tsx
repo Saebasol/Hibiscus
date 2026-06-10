@@ -13,7 +13,10 @@ export const getData = async ctx => {
   const response = await fetch(ctx.state.baseUrl + `/internal/image/${id}`)
 
   if (!response.ok) {
-    return { id: id, images: [] }
+    return {
+      result: { title: "Unknown", images: [] },
+      id: id
+    }
   }
   const data = await response.json()
 
@@ -23,18 +26,20 @@ export const getData = async ctx => {
   }
 }
 
-
 const Index = () => {
   const { data } = useRouteContext()
   const setTitle = useViewerHeaderTitle()[1]
 
   useEffect(() => {
     setTitle(data.result.title)
-  }, [setTitle])
+  }, [setTitle, data.result.title])
 
   return (
-    <Viewer images={data.result.images} />
-
+    <Viewer
+      images={data.result.images}
+      mangaId={String(data.id ?? data.result.id ?? data.result.title ?? "unknown")}
+      title={data.result.title}
+    />
   )
 }
 

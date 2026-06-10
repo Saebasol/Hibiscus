@@ -2,8 +2,8 @@ import { resolve } from 'node:path'
 import Fastify from 'fastify'
 import FastifyVite from '@fastify/vite'
 import { HeliotropeClient, Size } from '@saebasol/delphinium'
-
 import { env } from 'node:process'
+import { IMAGE_CACHE_TTL_MS, IMAGE_CACHE_MAX } from './shared/constants.js'
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -16,8 +16,19 @@ const heliotropeClient = new HeliotropeClient({
   timeout: 10000 // Optional timeout
 })
 
-const proxyImageUrl = (baseUrl: string, url: string) => `${baseUrl}/internal/proxy/${encodeURIComponent(url)}`
+const imageCache = new Map<number, {
+  expiresAt: number
+  payload: {
+    title: string
+    images: {
+      url: string
+      thumbnailUrl?: string
+      dimensions: { width: number; height: number }
+    }[]
+  }
+}>()
 
+const proxyImageUrl = (baseUrl: string, url: string) => `${baseUrl}/internal/proxy/${encodeURIComponent(url)}`
 
 const proxyThumbnailUrl = async (baseUrl: string, id: number) => {
   const thumbnail = await heliotropeClient.hitomi.getThumbnail({ id, size: Size.SMALLBIG, single: true })
@@ -46,29 +57,64 @@ server.addHook('onRequest', async (request, reply) => {
 
 server.get('/internal/image/:id', async (request, reply) => {
   const { id } = request.params as { id: string }
-  const galleryInfo = await heliotropeClient.hitomi.getGalleryInfo({ id: Number(id) })
-  const imageUrl = await heliotropeClient.hitomi.getImage({ id: Number(id) })
+  const numericId = Number(id)
+  const cached = imageCache.get(numericId)
+  if (cached && cached.expiresAt > Date.now()) {
+    return reply
+      .status(200)
+      .header('cache-control', `public, max-age=${Math.floor(IMAGE_CACHE_TTL_MS / 1000)}`)
+      .send(cached.payload)
+  }
+
+  const galleryInfo = await heliotropeClient.hitomi.getGalleryInfo({ id: numericId })
+  const imageUrl = await heliotropeClient.hitomi.getImage({ id: numericId })
+  const thumbnails = await heliotropeClient.hitomi.getThumbnail({ id: numericId, single: false, size: Size.SMALLSMALL })
 
   const imageUrls = imageUrl.map((item, i) => ({
     url: proxyImageUrl(request.baseUrl, item.url),
+    thumbnailUrl: thumbnails[i]?.url
+      ? proxyImageUrl(request.baseUrl, thumbnails[i].url)
+      : undefined,
     dimensions: {
       width: item.file.width,
       height: item.file.height
     }
   }))
 
-  return reply.status(200).send({
+  const payload = {
     title: galleryInfo.title,
     images: imageUrls,
-  })
+  }
+
+  imageCache.set(numericId, { expiresAt: Date.now() + IMAGE_CACHE_TTL_MS, payload })
+  if (imageCache.size > IMAGE_CACHE_MAX) {
+    const oldestKey = imageCache.keys().next().value
+    if (oldestKey !== undefined) {
+      imageCache.delete(oldestKey)
+    }
+  }
+
+  return reply
+    .status(200)
+    .header('cache-control', `public, max-age=${Math.floor(IMAGE_CACHE_TTL_MS / 1000)}`)
+    .send(payload)
 })
 
 server.get('/internal/list/:index', async (request, reply) => {
   const { index } = request.params as { index: string }
   try {
     const response = await heliotropeClient.hitomi.getList({ index: Number(index) })
-    const thumbnailPromises = response.items.map(item => proxyThumbnailUrl(request.baseUrl, item.id))
-    const thumbnails = await Promise.all(thumbnailPromises)
+    
+    const chunkSize = 10;
+    const thumbnails: (string | undefined)[] = [];
+    
+    for (let i = 0; i < response.items.length; i += chunkSize) {
+      const chunk = response.items.slice(i, i + chunkSize);
+      const chunkPromises = chunk.map(item => proxyThumbnailUrl(request.baseUrl, item.id));
+      const chunkResults = await Promise.all(chunkPromises);
+      thumbnails.push(...chunkResults);
+    }
+
     const result = {
       ...response,
       items: response.items.map((item, idx) => ({

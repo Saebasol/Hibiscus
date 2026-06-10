@@ -3,24 +3,16 @@ interface Dimensions {
   height: number
 }
 
-export interface LazyImageProps {
-  src: string
-  alt: string
-  index: number
-  dimensions: Dimensions
-  screenSize: Dimensions
-}
 export interface Image {
   url: string
+  thumbnailUrl?: string
   dimensions: Dimensions
-}
-
-export interface ImageRendererProps {
-  image: Image
-  index: number
 }
 
 export interface ViewerProps {
   images: Image[]
+  mangaId: string
+  title: string
+  author?: string
 }
 
