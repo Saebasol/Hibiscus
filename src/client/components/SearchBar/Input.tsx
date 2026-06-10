@@ -15,10 +15,13 @@ interface CustomTagify extends Tagify<TagData> {
       visible: boolean;
     };
     tag: boolean;
+    actions: {
+      selectOption: boolean;
+    };
   };
 }
 
-export const pattern = /female:|male:|tag:|artist:|character:|group:|type:/
+export const pattern = /-?(?:female:|male:|tag:|artist:|character:|group:|type:)/
 
 
 
@@ -74,10 +77,12 @@ const SearchInput = () => {
       tag.value = tag.prefix + tag.value;
     }
 
-    if (tag.value.startsWith("female:")) {
+    const effectiveValue = tag.value.startsWith('-') ? tag.value.slice(1) : tag.value;
+
+    if (effectiveValue.startsWith("female:")) {
       tag["data-accent-color"] = "ruby";
     }
-    else if (tag.value.startsWith("male:")) {
+    else if (effectiveValue.startsWith("male:")) {
       tag["data-accent-color"] = "blue";
     }
     else {
@@ -102,14 +107,23 @@ const SearchInput = () => {
 
     const mapping: Record<string, keyof typeof autoCompleteTags> = {
       "artist:": "artists",
+      "-artist:": "artists",
       "character:": "characters",
+      "-character:": "characters",
       "group:": "groups",
+      "-group:": "groups",
       "series:": "series",
+      "-series:": "series",
       "tag:": "tag",
+      "-tag:": "tag",
       "female:": "female",
+      "-female:": "female",
       "male:": "male",
+      "-male:": "male",
       "type:": "type",
-      "language:": "language"
+      "-type:": "type",
+      "language:": "language",
+      "-language:": "language",
     }
 
     for (const [prefix, key] of Object.entries(mapping)) {
@@ -130,6 +144,15 @@ const SearchInput = () => {
       if (inputElement) {
         inputElement.setAttribute('aria-multiline', 'false');
         inputElement.removeAttribute('tagify--mix')
+      }
+
+      const dropdown = tagifyRef.current.DOM?.dropdown;
+      if (dropdown) {
+        dropdown.addEventListener('pointerdown', () => {
+          if (tagifyRef.current) {
+            (tagifyRef.current as CustomTagify).state.actions.selectOption = true;
+          }
+        });
       }
     }
 
