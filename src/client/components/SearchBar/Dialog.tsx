@@ -70,6 +70,11 @@ const SearchDialog = () => {
       <Dialog.Content maxWidth={{
         "initial": "90vw",
         "md": "50vw",
+      }} onPointerDownOutside={(e) => {
+        const target = e.detail.originalEvent.target as Element | null;
+        if (target?.closest?.('.tagify__dropdown')) {
+          e.preventDefault();
+        }
       }}>
         <VisuallyHidden>
           <Dialog.Title>
