@@ -1,10 +1,11 @@
 // @ts-ignore
 import { useRouteContext } from '@fastify/react/client'
-import InfoCard from '../../components/Info'
 import { Flex } from '@radix-ui/themes'
 import { type RawListResultDTOData } from '@saebasol/delphinium'
-import Pagenator from '../../components/Pagenator'
 import { useNavigate } from 'react-router'
+
+import InfoCard from '../../components/Info'
+import Paginator from '../../components/Paginator'
 
 
 // @ts-ignore
@@ -52,7 +53,7 @@ const Index = () => {
           />
         ))
       }
-      <Pagenator
+      <Paginator
         count={data.result.count}
         currentPage={Number(data.index)}
         onPageChange={onPageChange}
