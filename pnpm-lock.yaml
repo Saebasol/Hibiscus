@@ -36,8 +36,8 @@ importers:
         specifier: ^4.35.4
         version: 4.35.4(prop-types@15.8.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@yui540/comimi':
-        specifier: ^0.2.1
-        version: 0.2.1
+        specifier: ^0.17.0
+        version: 0.17.0
       fastify:
         specifier: ^5.6.1
         version: 5.6.1
@@ -1343,8 +1343,8 @@ packages:
       react: '*'
       react-dom: '*'
 
-  '@yui540/comimi@0.2.1':
-    resolution: {integrity: sha512-ztejBPYVR5CkMescL3XyOHJLURNgd21GzON4LXsIQcyRbogvvwUD5LnC/lXSlfm1T+JMvlBoDjCV3T2AwXGoTQ==}
+  '@yui540/comimi@0.17.0':
+    resolution: {integrity: sha512-hyl6AgvqPLvgD86LVe20pUZfJYDE56N4X0zj07dc09bEcgMiOQvia1VZoFNknLc9LWgXO1BE55cr6fqV4pDKoQ==}
 
   abstract-logging@2.0.1:
     resolution: {integrity: sha512-2BjRTZxTPvheOvGbBslFSYOUkr+SjPtOnrLP33f+VIWLzezQpZcqVg7ja3L4dBXmzzgwT+a029jRx5PCi3JuiA==}
@@ -3503,7 +3503,7 @@ snapshots:
       react: 19.2.0
       react-dom: 19.2.0(react@19.2.0)
 
-  '@yui540/comimi@0.2.1': {}
+  '@yui540/comimi@0.17.0': {}
 
   abstract-logging@2.0.1: {}
 
