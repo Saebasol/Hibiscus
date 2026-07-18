@@ -1,14 +1,22 @@
-// @ts-ignore
-import { useRouteContext } from '@fastify/react/client'
+
 import InfoCard from '../../components/Info'
 import { Flex } from '@radix-ui/themes'
 import { type RawListResultDTOData } from '@saebasol/delphinium'
 import Pagenator from '../../components/Pagenator'
 import { useNavigate } from 'react-router'
+import type { ServerRouteContext } from '../../types/RouteContext'
+import { useTypedRouteContext } from '../../utils/useRouteContext'
 
+interface ListData {
+  result: RawListResultDTOData
+  index: number
+}
 
-// @ts-ignore
-export const getData = async ctx => {
+type ListServerContext = ServerRouteContext<{
+  Params: { index: string }
+}, ListData>
+
+export const getData = async (ctx: ListServerContext): Promise<ListData> => {
   const index = Number(ctx.req.params.index) || 1
 
   const response = await fetch(ctx.state.baseUrl + `/internal/list/${index}`)
@@ -19,7 +27,7 @@ export const getData = async ctx => {
       index: index
     }
   }
-  const data = await response.json()
+  const data = await response.json() as RawListResultDTOData
 
   return {
     result: data,
@@ -29,7 +37,7 @@ export const getData = async ctx => {
 }
 
 const Index = () => {
-  const { data }: { data: { result: RawListResultDTOData, index: number } } = useRouteContext()
+  const { data } = useTypedRouteContext<ListData>()
   const navigate = useNavigate()
 
   const onPageChange = (page: number) => {

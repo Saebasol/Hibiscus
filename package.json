@@ -13,34 +13,34 @@
     "clean": "rm -rf dist tsconfig.tsbuildinfo"
   },
   "dependencies": {
-    "@yui540/comimi": "^0.17.0",
     "@fastify/formbody": "^8.0.2",
-    "@fastify/one-line-logger": "^2.0.2",
-    "@fastify/react": "^1.1.0",
-    "@fastify/vite": "^8.2.0",
+    "@fastify/one-line-logger": "^2.1.0",
+    "@fastify/react": "^1.1.8",
+    "@fastify/vite": "^9.1.1",
     "@radix-ui/react-icons": "^1.3.2",
-    "@radix-ui/themes": "^3.2.1",
+    "@radix-ui/themes": "^3.3.0",
     "@saebasol/delphinium": "^1.7.0",
-    "@unhead/react": "^2.0.17",
-    "@yaireo/tagify": "^4.35.4",
-    "fastify": "^5.6.1",
+    "@unhead/react": "^2.1.15",
+    "@yaireo/tagify": "^4.38.0",
+    "@yui540/comimi": "^0.17.0",
+    "fastify": "^5.10.0",
     "history": "^5.3.0",
-    "minipass": "^7.1.2",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "react-router": "^7.9.3",
-    "valtio": "^2.1.8"
+    "minipass": "^7.1.3",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "react-router": "^7.18.1",
+    "valtio": "^2.3.2"
   },
   "devDependencies": {
-    "@types/node": "^22.18.8",
-    "@types/react": "^19.2.0",
-    "@types/react-dom": "^19.2.0",
+    "@types/node": "^22.20.1",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
     "@types/yaireo__tagify": "^4.27.0",
     "@vitejs/plugin-react": "^4.7.0",
     "oxlint": "^0.16.12",
-    "tsx": "^4.20.6",
+    "tsx": "^4.23.1",
     "typescript": "^5.9.3",
-    "vite": "^6.3.6"
+    "vite": "^6.4.3"
   },
   "packageManager": "pnpm@10.11.0+sha512.6540583f41cc5f628eb3d9773ecee802f4f9ef9923cc45b69890fb47991d4b092964694ec3a4f738a420c918a333062c8b925d312f42e4f0c263eb603551f977"
 }
