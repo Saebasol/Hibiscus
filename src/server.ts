@@ -41,13 +41,15 @@ const server = Fastify({
       target: '@fastify/one-line-logger'
     }
   },
-  maxParamLength: 1000,
+  routerOptions: {
+    maxParamLength: 1000,
+  },
 })
 
 await server.register(FastifyVite, {
   // TODO handle via CLI path argument with proper resolve
   root: resolve(import.meta.dirname, '..'),
-  distDir: import.meta.dirname, // This file will also live in the dist folder when built
+  // distDir: import.meta.dirname, // This file will also live in the dist folder when built
   renderer: '@fastify/react',
 })
 
