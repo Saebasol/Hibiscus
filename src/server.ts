@@ -1,5 +1,5 @@
 import { resolve } from 'node:path'
-import Fastify from 'fastify'
+import Fastify, { type FastifyRequest } from 'fastify'
 import FastifyVite from '@fastify/vite'
 import { HeliotropeClient, Size } from '@saebasol/delphinium'
 import { env } from 'node:process'
@@ -16,17 +16,16 @@ const heliotropeClient = new HeliotropeClient({
   timeout: 10000 // Optional timeout
 })
 
-const imageCache = new Map<number, {
-  expiresAt: number
-  payload: {
-    title: string
-    images: {
-      url: string
-      thumbnailUrl?: string
-      dimensions: { width: number; height: number }
-    }[]
-  }
-}>()
+interface Gallery {
+  title: string
+  images: {
+    url: string
+    thumbnailUrl?: string
+    dimensions: { width: number; height: number }
+  }[]
+}
+
+const imageCache = new Map<number, { expiresAt: number; payload: Gallery }>()
 
 const proxyImageUrl = (baseUrl: string, url: string) => `${baseUrl}/internal/proxy/${encodeURIComponent(url)}`
 
@@ -53,53 +52,52 @@ await server.register(FastifyVite, {
   renderer: '@fastify/react',
 })
 
-server.addHook('onRequest', async (request, reply) => {
+server.addHook('onRequest', async (request) => {
   request.baseUrl = `${request.protocol}://${request.headers.host}`;
 });
 
-server.get('/internal/image/:id', async (request, reply) => {
-  const { id } = request.params as { id: string }
-  const numericId = Number(id)
-  const cached = imageCache.get(numericId)
-  if (cached && cached.expiresAt > Date.now()) {
-    return reply
-      .status(200)
-      .header('cache-control', `public, max-age=${Math.floor(IMAGE_CACHE_TTL_MS / 1000)}`)
-      .send(cached.payload)
+server.get('/', async (_, reply) => reply.redirect('/list/1'))
+
+async function loadGallery(id: number, request: FastifyRequest) {
+  const cached = imageCache.get(id)
+  if (cached && cached.expiresAt > Date.now()) return cached.payload
+
+  const [gallery, originals, thumbnails] = await Promise.all([
+    heliotropeClient.hitomi.getGalleryInfo({ id }),
+    heliotropeClient.hitomi.getImage({ id }),
+    server.vite.runtimeConfig.dev ? [] : heliotropeClient.hitomi.getThumbnail({ id, single: false, size: Size.SMALLSMALL }).catch(error => {
+      request.log.warn({ err: error, galleryId: id }, 'Thumbnails unavailable')
+      return []
+    }),
+  ])
+  const payload: Gallery = {
+    title: gallery.title,
+    images: originals.map((item, i) => ({
+      url: proxyImageUrl('', item.url),
+      thumbnailUrl: thumbnails[i]?.url ? proxyImageUrl('', thumbnails[i].url) : undefined,
+      dimensions: { width: item.file.width, height: item.file.height },
+    })),
   }
-
-  const galleryInfo = await heliotropeClient.hitomi.getGalleryInfo({ id: numericId })
-  const imageUrl = await heliotropeClient.hitomi.getImage({ id: numericId })
-  const thumbnails = await heliotropeClient.hitomi.getThumbnail({ id: numericId, single: false, size: Size.SMALLSMALL })
-
-  const imageUrls = imageUrl.map((item, i) => ({
-    url: proxyImageUrl(request.baseUrl, item.url),
-    thumbnailUrl: thumbnails[i]?.url
-      ? proxyImageUrl(request.baseUrl, thumbnails[i].url)
-      : undefined,
-    dimensions: {
-      width: item.file.width,
-      height: item.file.height
-    }
-  }))
-
-  const payload = {
-    title: galleryInfo.title,
-    images: imageUrls,
-  }
-
-  imageCache.set(numericId, { expiresAt: Date.now() + IMAGE_CACHE_TTL_MS, payload })
+  imageCache.set(id, { expiresAt: Date.now() + IMAGE_CACHE_TTL_MS, payload })
   if (imageCache.size > IMAGE_CACHE_MAX) {
     const oldestKey = imageCache.keys().next().value
-    if (oldestKey !== undefined) {
-      imageCache.delete(oldestKey)
-    }
+    if (oldestKey !== undefined) imageCache.delete(oldestKey)
   }
+  return payload
+}
 
-  return reply
-    .status(200)
-    .header('cache-control', `public, max-age=${Math.floor(IMAGE_CACHE_TTL_MS / 1000)}`)
-    .send(payload)
+server.get<{ Params: { id: string }; Querystring: { relative?: string } }>('/internal/image/:id', async (request, reply) => {
+  const payload = await loadGallery(Number(request.params.id), request)
+  reply.header('cache-control', `public, max-age=${Math.floor(IMAGE_CACHE_TTL_MS / 1000)}`)
+  if (request.query.relative === '1') return payload
+  return {
+    ...payload,
+    images: payload.images.map(image => ({
+      ...image,
+      url: request.baseUrl + image.url,
+      thumbnailUrl: image.thumbnailUrl && request.baseUrl + image.thumbnailUrl,
+    })),
+  }
 })
 
 server.get('/internal/list/:index', async (request, reply) => {
@@ -114,8 +112,10 @@ server.get('/internal/list/:index', async (request, reply) => {
 
 server.get('/internal/thumbnail/:id', async (request, reply) => {
   const { id } = request.params as { id: string }
+  const { redirect } = request.query as { redirect?: string }
   try {
-    const url = await proxyThumbnailUrl(request.baseUrl, Number(id))
+    const url = await proxyThumbnailUrl(redirect === '1' ? '' : request.baseUrl, Number(id))
+    if (redirect === '1') return reply.redirect(url)
     return reply.status(200).send({ url })
   } catch (error) {
     return reply.status(500).send({ error: error })
