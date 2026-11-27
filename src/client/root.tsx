@@ -1,16 +1,18 @@
 import '@radix-ui/themes/styles.css'
+import '@yaireo/tagify/dist/tagify.css'
+import './components/SearchBar/Input.css'
 
 import { Suspense } from 'react'
 import { Route, Routes } from 'react-router'
 import { AppRoute, Router } from '$app/core.tsx'
 import { Theme } from '@radix-ui/themes'
+import RouteErrorBoundary from './components/RouteErrorBoundary'
 
-const Root = ({ url, routes, head, ctxHydration, routeMap }: {
-  url: string
+const Root = ({ url, routes, ctxHydration, routeMap }: {
+  url?: string
   routes: Array<{ path: string; component: React.ComponentType }>
-  head: any
-  ctxHydration?: Record<string, any>
-  routeMap: Record<string, any>
+  ctxHydration: Record<string, unknown>
+  routeMap: Record<string, Record<string, unknown>>
 }) => {
   return (
     <Theme appearance="dark" accentColor="ruby">
@@ -23,13 +25,13 @@ const Root = ({ url, routes, head, ctxHydration, routeMap }: {
                 path={path}
                 element={
                   <AppRoute
-                    //@ts-ignore
-                    head={head}
                     ctxHydration={ctxHydration}
                     ctx={routeMap[path]}
                   >
 
-                    <Component />
+                    <RouteErrorBoundary>
+                      <Component />
+                    </RouteErrorBoundary>
 
                   </AppRoute>
                 }
