@@ -1,10 +1,26 @@
 import { developmentThumbnail } from "../../utils/developmentThumbnail"
-import { Link } from "@radix-ui/themes"
+import { EyeClosedIcon } from "@radix-ui/react-icons"
+import { Button, IconButton, Link, Skeleton } from "@radix-ui/themes"
 import { useState, useEffect, useRef } from "react"
+import { matchBlurredTags, useBlurredTags } from "../BlurredTags"
 
-const InfoThumbnail = ({ id }: { id: number }) => {
+const InfoThumbnail = ({ id, tags = [] }: { id: number; tags?: string[] }) => {
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(developmentThumbnail ?? null)
+  const [loaded, setLoaded] = useState(false)
+  const [revealed, setRevealed] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
+  const { tags: blurredTags, blurAll } = useBlurredTags()
+  const matchedTags = matchBlurredTags(tags, blurredTags)
+  const shouldBlur = blurAll || matchedTags.length > 0
+  const isBlurred = shouldBlur && !revealed
+
+  useEffect(() => {
+    setRevealed(false)
+  }, [id])
+
+  useEffect(() => {
+    setLoaded(false)
+  }, [thumbnailUrl])
 
   useEffect(() => {
     const element = containerRef.current
@@ -27,32 +43,80 @@ const InfoThumbnail = ({ id }: { id: number }) => {
   }, [id])
 
   return (
-    <Link href={`/viewer/${id}`}>
-      <div
-        ref={containerRef}
-        style={{
-          width: "12.5rem",
-          height: "17.5rem",
-          borderRadius: "0.5rem",
-          backgroundColor: "var(--gray-5)",
-          overflow: "hidden",
-          flexShrink: 0,
-        }}
-      >
+    <div
+      ref={containerRef}
+      style={{
+        position: "relative",
+        width: "12.5rem",
+        height: "17.5rem",
+        borderRadius: "0.5rem",
+        backgroundColor: "var(--gray-5)",
+        overflow: "hidden",
+        flexShrink: 0,
+      }}
+    >
+      {!loaded && (
+        <Skeleton width="100%" height="100%" style={{ position: "absolute", inset: 0 }} />
+      )}
+      <Link href={`/viewer/${id}`} style={{ display: "block", width: "100%", height: "100%" }}>
         {thumbnailUrl && (
           <img
             alt="Thumbnail"
             loading="lazy"
             src={thumbnailUrl}
+            onLoad={() => setLoaded(true)}
             style={{
               width: "100%",
               height: "100%",
               objectFit: "cover",
+              opacity: loaded ? 1 : 0,
+              filter: isBlurred ? "blur(1.25rem)" : "none",
+              transform: isBlurred ? "scale(1.12)" : "scale(1)",
+              transition: "opacity 180ms ease, filter 180ms ease, transform 180ms ease",
             }}
           />
         )}
-      </div>
-    </Link>
+      </Link>
+      {isBlurred && (
+        <Button
+          type="button"
+          size="1"
+          variant="solid"
+          color="gray"
+          aria-label="Reveal blurred thumbnail"
+          onClick={() => setRevealed(true)}
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            zIndex: 1,
+          }}
+        >
+          <EyeClosedIcon />
+          {matchedTags.length > 0 ? `${matchedTags.length} tag${matchedTags.length > 1 ? "s" : ""}` : "Blurred"}
+        </Button>
+      )}
+      {shouldBlur && revealed && (
+        <IconButton
+          type="button"
+          size="1"
+          variant="solid"
+          color="gray"
+          aria-label="Blur thumbnail"
+          title="Blur thumbnail"
+          onClick={() => setRevealed(false)}
+          style={{
+            position: "absolute",
+            top: "0.5rem",
+            right: "0.5rem",
+            zIndex: 1,
+          }}
+        >
+          <EyeClosedIcon />
+        </IconButton>
+      )}
+    </div>
   )
 }
 

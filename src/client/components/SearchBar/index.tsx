@@ -1,14 +1,33 @@
 
-import { TextField } from '@radix-ui/themes';
+import { Box, Kbd, TextField } from '@radix-ui/themes';
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { useOpenSearchDialog } from './context';
 import SearchDialog from './Dialog';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 
 const SearchBar = () => {
   const setOpenSearchDialog = useOpenSearchDialog()[1];
   const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault()
+        setOpenSearchDialog(true)
+        return
+      }
+      if (event.key !== '/' || event.metaKey || event.ctrlKey || event.altKey) return
+      const target = event.target as HTMLElement | null
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' || target.isContentEditable)) {
+        return
+      }
+      event.preventDefault()
+      setOpenSearchDialog(true)
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [setOpenSearchDialog])
 
   return (
     <>
@@ -34,6 +53,11 @@ const SearchBar = () => {
       >
         <TextField.Slot>
           <MagnifyingGlassIcon height="16" width="16" />
+        </TextField.Slot>
+        <TextField.Slot side="right">
+          <Box display={{ initial: 'none', sm: 'inline-block' }}>
+            <Kbd size="1">/</Kbd>
+          </Box>
         </TextField.Slot>
       </TextField.Root >
       <SearchDialog />

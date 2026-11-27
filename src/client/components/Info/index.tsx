@@ -9,18 +9,21 @@ import InfoSeries from "./Series"
 import InfoCharacter from "./Charactor"
 import InfoDate from "./Date"
 import { type RawInfoData } from "@saebasol/delphinium"
+import { BookmarkButton } from "../Bookmarks"
 
 const InfoCard = ({ infoData }: { infoData: RawInfoData }) => {
   return (
     <Box width="100%">
       <Card size="3" >
         <Flex direction="column" gap="4">
-          <Heading size={{ initial: '4', sm: '6' }} weight="bold" color="gray" >
-            <Link href={`/viewer/${infoData.id}`} underline="hover" >
-              {infoData.title}
-            </Link>
-
-          </Heading>
+          <Flex justify="between" align="start" gap="3">
+            <Heading size={{ initial: '4', sm: '6' }} weight="bold" color="gray" >
+              <Link href={`/viewer/${infoData.id}`} underline="hover" >
+                {infoData.title}
+              </Link>
+            </Heading>
+            <BookmarkButton workId={infoData.id} title={infoData.title} />
+          </Flex>
 
           <Flex justify="between" align="center" gap="4">
 
@@ -39,7 +42,7 @@ const InfoCard = ({ infoData }: { infoData: RawInfoData }) => {
 
           <Flex direction={{ initial: 'column', sm: 'row' }} gap="4">
             <Flex align="center" justify="center" style={{ flexShrink: 0 }}>
-              <InfoThumbnail id={infoData.id} />
+              <InfoThumbnail id={infoData.id} tags={infoData.tags} />
             </Flex>
 
             <Flex direction="column" gap="3" >

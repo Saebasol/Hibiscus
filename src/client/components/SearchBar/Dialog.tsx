@@ -1,5 +1,5 @@
 import { Cross1Icon } from "@radix-ui/react-icons";
-import { Dialog, Flex, IconButton, RadioCards, ScrollArea, Text } from "@radix-ui/themes";
+import { Dialog, Flex, IconButton, RadioCards, ScrollArea, Spinner, Text } from "@radix-ui/themes";
 import { useOpenSearchDialog, useSearchInputData } from "./context";
 import SearchInput, { pattern } from "./Input";
 import { useEffect, useState } from "react";
@@ -13,56 +13,67 @@ const SearchDialog = () => {
   const [openSearchDialog, setOpenSearchDialog] = useOpenSearchDialog();
   const [searchInputData, setSearchInputData] = useSearchInputData();
   const [searchResults, setSearchResults] = useState<RawSearchResultData | null>(null);
-  const query = [...searchInputData.tags];
-  if (searchInputData.title && !pattern.test(searchInputData.title)) {
-    query.push(searchInputData.title);
-  }
+  const [searching, setSearching] = useState(false);
 
   useEffect(() => {
     setSearchInputData({ title: "", tags: [] });
   }, [setSearchInputData]);
 
-  const performSearch = async () => {
-    if (!searchInputData.title.trim() && searchInputData.tags.length === 0) {
-      setSearchResults({
-        results: [],
-        count: 0,
-      });
+  useEffect(() => {
+    const hasQuery = Boolean(searchInputData.title.trim() || searchInputData.tags.length > 0);
+    if (!hasQuery) {
+      setSearching(false);
+      setSearchResults({ results: [], count: 0 });
       return;
     }
 
-    try {
-      const response = await fetch('/internal/search', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          query,
-          offset: 1,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      const data = await response.json() as RawSearchResultData
-      setSearchResults(data);
-
-
-    } catch (error) {
-      console.error('Error during search:', error);
-      setSearchResults({
-        results: [],
-        count: 0,
-      });
+    const requestQuery = [...searchInputData.tags];
+    if (searchInputData.title && !pattern.test(searchInputData.title)) {
+      requestQuery.push(searchInputData.title);
     }
-  };
 
-  useEffect(() => {
-    performSearch();
+    const controller = new AbortController();
+    setSearching(true);
+    const timer = window.setTimeout(async () => {
+      try {
+        const response = await fetch('/internal/search', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            query: requestQuery,
+            offset: 1,
+          }),
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json() as RawSearchResultData;
+        if (!controller.signal.aborted) setSearchResults(data);
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          console.error('Error during search:', error);
+          setSearchResults({
+            results: [],
+            count: 0,
+          });
+        }
+      } finally {
+        if (!controller.signal.aborted) setSearching(false);
+      }
+    }, 250);
+
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
   }, [searchInputData]);
+
+  const hasResults = Boolean(searchResults?.results && searchResults.results.length > 0);
 
   return (
     <Dialog.Root open={openSearchDialog} onOpenChange={setOpenSearchDialog}>
@@ -104,19 +115,26 @@ const SearchDialog = () => {
               style={{
                 justifyItems: "center",
                 height: "100%",
-                alignContent: "center",
+                alignContent: hasResults ? "start" : "center",
               }}
             >
               {
-                searchResults?.results && searchResults.results.length > 0 ?
-                  searchResults.results.map((item) => (
+                searching ? (
+                  <Flex align="center" gap="2">
+                    <Spinner size="2" />
+                    <Text size="2" color="gray">Searching...</Text>
+                  </Flex>
+                ) : hasResults ? (
+                  searchResults!.results.map((item) => (
                     <SearchResultItem
                       key={item.id}
                       id={item.id}
                       title={item.title}
                       artist={item.artists.join(', ')}
                     />))
-                  : <Text>No results found</Text>
+                ) : (
+                  <Text color="gray">No results found</Text>
+                )
               }
             </RadioCards.Root>
           </ScrollArea>

@@ -1,4 +1,7 @@
 import { Flex, Text } from "@radix-ui/themes";
+import { Fragment } from "react";
+import { Link } from "react-router";
+import { filterSearchUrl } from "../../utils/catalog";
 
 const GroupIcon = ({ ...props }) => {
   return (
@@ -20,7 +23,14 @@ const InfoGroup = ({ group }: { group: string[] }) => {
       <Flex align="center" gap="2">
         <GroupIcon style={{ flexShrink: 0 }} />
         <Text color="gray" size="1" weight="medium">
-          {group.join(", ")}
+          {group.map((name, index) => (
+            <Fragment key={name}>
+              {index > 0 && ", "}
+              <Link to={filterSearchUrl("group:", name)} style={{ color: "inherit", textDecoration: "none" }}>
+                {name}
+              </Link>
+            </Fragment>
+          ))}
         </Text>
       </Flex>
     )

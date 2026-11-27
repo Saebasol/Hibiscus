@@ -1,8 +1,7 @@
 
-import InfoCard from '../../components/Info'
-import { Container, Flex } from '@radix-ui/themes'
+import WorkList from '../../components/WorkList'
+import { Container } from '@radix-ui/themes'
 import { type RawListResultDTOData } from '@saebasol/delphinium'
-import Pagenator from '../../components/Pagenator'
 import { useNavigate } from 'react-router'
 import type { RouteError, ServerRouteContext } from '../../types/RouteContext'
 import { useTypedRouteContext } from '../../utils/useRouteContext'
@@ -52,18 +51,13 @@ const Index = () => {
   return (
     <main>
       <Container size="4" px="4" py={{ initial: '5', sm: '7' }}>
-        <Flex direction="column" gap="4" width="100%">
-          {data.result.items.map(item => (
-            <InfoCard key={item.id} infoData={item} />
-          ))}
-          <nav aria-label="List pages">
-            <Pagenator
-              count={data.result.count}
-              currentPage={Number(data.index)}
-              onPageChange={onPageChange}
-            />
-          </nav>
-        </Flex>
+        <WorkList
+          items={data.result.items}
+          count={data.result.count}
+          currentPage={Number(data.index)}
+          onPageChange={onPageChange}
+          navLabel="List pages"
+        />
       </Container>
     </main>
   )

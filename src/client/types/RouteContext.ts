@@ -5,8 +5,17 @@ import type {
   RouteGenericInterface,
 } from 'fastify'
 
+export interface PublicUser {
+  id: number
+  displayName: string
+  avatarUrl: string | null
+}
+
 export interface AppState {
   baseUrl: string
+  authEnabled: boolean
+  authProviderName: string
+  currentUser: PublicUser | null
 }
 
 export type RouteError =

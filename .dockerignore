@@ -3,3 +3,14 @@ node_modules
 .gitignore
 *.md
 dist
+.env
+.env.*
+!.env.example
+/data/
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+.DS_Store

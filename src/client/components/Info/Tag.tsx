@@ -1,4 +1,6 @@
 import { Badge, Flex, Text } from "@radix-ui/themes"
+import { Link } from "react-router"
+import { tagSearchUrl } from "../../utils/catalog"
 
 const TagBadge = ({ tag }: { tag: string }) => {
   let tagColor: "gray" | "ruby" | "blue" = "gray"
@@ -16,14 +18,16 @@ const TagBadge = ({ tag }: { tag: string }) => {
   }
 
   return (
-    <Badge
-      size="1"
-      variant="soft"
-      color={tagColor}
-      style={{ cursor: "pointer" }}
-    >
-      {displayTag}
-    </Badge>
+    <Link to={tagSearchUrl(tag)} style={{ textDecoration: "none" }}>
+      <Badge
+        size="1"
+        variant="soft"
+        color={tagColor}
+        style={{ cursor: "pointer" }}
+      >
+        {displayTag}
+      </Badge>
+    </Link>
   )
 }
 
