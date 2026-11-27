@@ -1,9 +1,15 @@
+import 'dotenv/config'
 import { resolve } from 'node:path'
 import Fastify, { type FastifyRequest } from 'fastify'
+import FastifyCookie from '@fastify/cookie'
+import FastifyFormbody from '@fastify/formbody'
 import FastifyVite from '@fastify/vite'
 import { HeliotropeClient, Size } from '@saebasol/delphinium'
 import { env } from 'node:process'
 import { IMAGE_CACHE_TTL_MS, IMAGE_CACHE_MAX } from './shared/constants.js'
+import type HibiscusDatabase from './server/database.js'
+import { readOidcConfig, registerAuth } from './server/auth.js'
+import { registerBookmarkRoutes } from './server/bookmarks.js'
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -34,16 +40,27 @@ const proxyThumbnailUrl = async (baseUrl: string, id: number) => {
   return proxyImageUrl(baseUrl, thumbnail[0].url)
 }
 
+const oidcConfig = readOidcConfig()
+const database: HibiscusDatabase | null = oidcConfig
+  ? new (await import('./server/database.js')).default(
+      env.DATABASE_PATH || resolve(import.meta.dirname, '..', 'data', 'hibiscus.db'),
+    )
+  : null
 const server = Fastify({
   logger: {
     transport: {
       target: '@fastify/one-line-logger'
     }
   },
+  trustProxy: env.TRUST_PROXY === 'true',
   routerOptions: {
     maxParamLength: 1000,
   },
 })
+
+await server.register(FastifyCookie)
+await server.register(FastifyFormbody)
+if (database) server.addHook('onClose', async () => database.close())
 
 await server.register(FastifyVite, {
   // TODO handle via CLI path argument with proper resolve
@@ -55,6 +72,9 @@ await server.register(FastifyVite, {
 server.addHook('onRequest', async (request) => {
   request.baseUrl = `${request.protocol}://${request.headers.host}`;
 });
+
+await registerAuth(server, database)
+registerBookmarkRoutes(server, database)
 
 server.get('/', async (_, reply) => reply.redirect('/list/1'))
 
@@ -163,4 +183,6 @@ server.get('/internal/proxy/:url', async (request, reply) => {
 
 await server.vite.ready()
 
-await server.listen({ host: '0.0.0.0', port: 3000 })
+const port = env.PORT ? Number(env.PORT) : 3000
+if (!Number.isSafeInteger(port) || port < 0 || port > 65535) throw new Error('PORT must be a valid TCP port')
+await server.listen({ host: env.HOST || '0.0.0.0', port })

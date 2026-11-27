@@ -30,7 +30,7 @@ export default function Viewer({ images, mangaId, title }: ViewerProps) {
   return (
     <Grid asChild height="100dvh" rows="auto minmax(0, 1fr) auto" style={{ background: 'var(--gray-1)' }}>
       <main ref={reader}>
-        <ViewerHeader reader={reader} title={title} imageSize={imageSize} direction={direction}
+        <ViewerHeader reader={reader} workId={Number(mangaId)} title={title} imageSize={imageSize} direction={direction}
           webtoon={webtoon} onToggleWebtoon={toggleWebtoon}
           onSizeChange={setImageSize} onToggleDirection={() => setDirection(dir => dir === 'rtl' ? 'ltr' : 'rtl')} />
         {webtoon ? (
