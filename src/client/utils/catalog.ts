@@ -41,3 +41,12 @@ export function searchUrl(query: string, page = 1) {
   if (page > 1) params.set('page', String(page))
   return '/search?' + params
 }
+
+export function filterSearchUrl(prefix: string, value: string) {
+  return searchUrl(prefix + value.trim().replace(/\s+/g, '_'))
+}
+
+export function tagSearchUrl(tag: string) {
+  const normalized = tag.trim().replace(/\s+/g, '_')
+  return searchUrl(normalized.includes(':') ? normalized : 'tag:' + normalized)
+}

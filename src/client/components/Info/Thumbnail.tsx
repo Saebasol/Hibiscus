@@ -1,11 +1,12 @@
 import { developmentThumbnail } from "../../utils/developmentThumbnail"
 import { EyeClosedIcon } from "@radix-ui/react-icons"
-import { Button, IconButton, Link } from "@radix-ui/themes"
+import { Button, IconButton, Link, Skeleton } from "@radix-ui/themes"
 import { useState, useEffect, useRef } from "react"
 import { matchBlurredTags, useBlurredTags } from "../BlurredTags"
 
 const InfoThumbnail = ({ id, tags = [] }: { id: number; tags?: string[] }) => {
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(developmentThumbnail ?? null)
+  const [loaded, setLoaded] = useState(false)
   const [revealed, setRevealed] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const { tags: blurredTags, blurAll } = useBlurredTags()
@@ -16,6 +17,10 @@ const InfoThumbnail = ({ id, tags = [] }: { id: number; tags?: string[] }) => {
   useEffect(() => {
     setRevealed(false)
   }, [id])
+
+  useEffect(() => {
+    setLoaded(false)
+  }, [thumbnailUrl])
 
   useEffect(() => {
     const element = containerRef.current
@@ -50,19 +55,24 @@ const InfoThumbnail = ({ id, tags = [] }: { id: number; tags?: string[] }) => {
         flexShrink: 0,
       }}
     >
+      {!loaded && (
+        <Skeleton width="100%" height="100%" style={{ position: "absolute", inset: 0 }} />
+      )}
       <Link href={`/viewer/${id}`} style={{ display: "block", width: "100%", height: "100%" }}>
         {thumbnailUrl && (
           <img
             alt="Thumbnail"
             loading="lazy"
             src={thumbnailUrl}
+            onLoad={() => setLoaded(true)}
             style={{
               width: "100%",
               height: "100%",
               objectFit: "cover",
+              opacity: loaded ? 1 : 0,
               filter: isBlurred ? "blur(1.25rem)" : "none",
               transform: isBlurred ? "scale(1.12)" : "scale(1)",
-              transition: "filter 180ms ease, transform 180ms ease",
+              transition: "opacity 180ms ease, filter 180ms ease, transform 180ms ease",
             }}
           />
         )}

@@ -1,5 +1,6 @@
-import { Box, Button, Flex, Heading, IconButton } from "@radix-ui/themes";
-import { BookmarkIcon, ExitIcon } from "@radix-ui/react-icons";
+import { useRef } from "react";
+import { Avatar, Box, Button, DropdownMenu, Flex, Heading, IconButton } from "@radix-ui/themes";
+import { BookmarkIcon, ExitIcon, PersonIcon } from "@radix-ui/react-icons";
 import SearchBar from "./SearchBar";
 import { BlurredTagsDialog } from "./BlurredTags";
 import { Link } from "react-router";
@@ -7,6 +8,7 @@ import { useTypedRouteContext } from "../utils/useRouteContext";
 
 const Header = () => {
   const { state } = useTypedRouteContext<unknown>()
+  const logoutFormRef = useRef<HTMLFormElement>(null)
 
   return (
     <Box
@@ -34,15 +36,41 @@ const Header = () => {
             <BlurredTagsDialog />
             {state.authEnabled && (state.currentUser ? (
               <>
-                <IconButton asChild size="2" variant="solid" color="gray" aria-label="Bookmarks" title="Bookmarks">
+                <IconButton asChild size="2" variant="soft" color="gray" aria-label="Bookmarks" title="Bookmarks">
                   <Link to="/bookmarks"><BookmarkIcon /></Link>
                 </IconButton>
-                <form method="post" action="/auth/logout">
-                  <IconButton type="submit" size="2" variant="solid" color="gray"
-                    aria-label={`Log out ${state.currentUser.displayName}`} title={`Log out ${state.currentUser.displayName}`}>
-                    <ExitIcon />
-                  </IconButton>
-                </form>
+                <form ref={logoutFormRef} method="post" action="/auth/logout" hidden />
+                <DropdownMenu.Root>
+                  <DropdownMenu.Trigger>
+                    <IconButton
+                      size="2"
+                      variant="soft"
+                      color="gray"
+                      aria-label={state.currentUser.displayName}
+                      title={state.currentUser.displayName}
+                    >
+                      <Avatar
+                        size="1"
+                        radius="full"
+                        src={state.currentUser.avatarUrl ?? undefined}
+                        fallback={state.currentUser.displayName.slice(0, 1).toUpperCase()}
+                      />
+                    </IconButton>
+                  </DropdownMenu.Trigger>
+                  <DropdownMenu.Content align="end">
+                    <DropdownMenu.Label>{state.currentUser.displayName}</DropdownMenu.Label>
+                    <DropdownMenu.Item asChild>
+                      <Link to="/bookmarks"><BookmarkIcon /> Bookmarks</Link>
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Item asChild>
+                      <Link to="/login"><PersonIcon /> Account</Link>
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Separator />
+                    <DropdownMenu.Item color="ruby" onSelect={() => logoutFormRef.current?.requestSubmit()}>
+                      <ExitIcon /> Log out
+                    </DropdownMenu.Item>
+                  </DropdownMenu.Content>
+                </DropdownMenu.Root>
               </>
             ) : (
               <Button asChild size="1" variant="solid">

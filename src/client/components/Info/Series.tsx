@@ -1,4 +1,6 @@
 import { Flex, Text, Badge } from "@radix-ui/themes";
+import { Link } from "react-router";
+import { filterSearchUrl } from "../../utils/catalog";
 
 const InfoSeries = ({ series }: { series: string[] }) => {
   if (!(series.length === 0))
@@ -10,15 +12,16 @@ const InfoSeries = ({ series }: { series: string[] }) => {
         <Flex gap="1" wrap="wrap" style={{ overflowY: "auto" }}>
           {
             series.map((s, index) => (
-              <Badge
-                key={index}
-                size="1"
-                variant="soft"
-                color="gray"
-                style={{ cursor: "pointer" }}
-              >
-                {s}
-              </Badge>
+              <Link key={index} to={filterSearchUrl("series:", s)} style={{ textDecoration: "none" }}>
+                <Badge
+                  size="1"
+                  variant="soft"
+                  color="gray"
+                  style={{ cursor: "pointer" }}
+                >
+                  {s}
+                </Badge>
+              </Link>
             ))
           }
         </Flex>

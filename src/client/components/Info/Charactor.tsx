@@ -1,4 +1,6 @@
 import { Badge, Flex, Text } from "@radix-ui/themes";
+import { Link } from "react-router";
+import { filterSearchUrl } from "../../utils/catalog";
 
 
 const InfoCharacter = ({ character }: { character: string[] }) => {
@@ -11,15 +13,16 @@ const InfoCharacter = ({ character }: { character: string[] }) => {
         <Flex gap="1" wrap="wrap" style={{ overflowY: "auto" }}>
           {
             character.map((c, index) => (
-              <Badge
-                key={index}
-                size="1"
-                variant="soft"
-                color="gray"
-                style={{ cursor: "pointer" }}
-              >
-                {c}
-              </Badge>
+              <Link key={index} to={filterSearchUrl("character:", c)} style={{ textDecoration: "none" }}>
+                <Badge
+                  size="1"
+                  variant="soft"
+                  color="gray"
+                  style={{ cursor: "pointer" }}
+                >
+                  {c}
+                </Badge>
+              </Link>
             ))
           }
         </Flex>

@@ -130,6 +130,19 @@ server.get('/internal/list/:index', async (request, reply) => {
   }
 })
 
+server.get<{ Params: { id: string } }>('/internal/info/:id', async (request, reply) => {
+  const { id } = request.params
+  if (!/^[1-9]\d*$/.test(id) || !Number.isSafeInteger(Number(id))) {
+    return reply.status(400).send({ error: 'Invalid work ID' })
+  }
+  try {
+    const response = await heliotropeClient.hitomi.getInfo({ id: Number(id) })
+    return reply.status(200).header('cache-control', 'public, max-age=300').send(response)
+  } catch (error) {
+    return reply.status(500).header('cache-control', 'no-store').send({ error })
+  }
+})
+
 server.get('/internal/thumbnail/:id', async (request, reply) => {
   const { id } = request.params as { id: string }
   const { redirect } = request.query as { redirect?: string }

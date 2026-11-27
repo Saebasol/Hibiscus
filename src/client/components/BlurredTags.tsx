@@ -246,7 +246,7 @@ export function BlurredTagsDialog() {
       <Dialog.Trigger>
         <IconButton
           size="2"
-          variant="solid"
+          variant={active ? 'solid' : 'soft'}
           color={active ? 'ruby' : 'gray'}
           aria-label="Thumbnail blur settings"
           title="Thumbnail blur settings"

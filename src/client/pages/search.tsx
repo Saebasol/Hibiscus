@@ -2,8 +2,7 @@ import { Container, Flex, Heading, Text } from '@radix-ui/themes'
 import type { RawSearchResultData } from '@saebasol/delphinium'
 import { useNavigate } from 'react-router'
 import SearchInput from '../components/SearchBar/Input'
-import InfoCard from '../components/Info'
-import Pagenator from '../components/Pagenator'
+import WorkList from '../components/WorkList'
 import type { RouteContext, RouteError, ServerRouteContext } from '../types/RouteContext'
 import { PAGE_SIZE, searchTerms, searchUrl } from '../utils/catalog'
 import { useTypedRouteContext } from '../utils/useRouteContext'
@@ -72,12 +71,14 @@ export default function Search() {
           )}
         </Flex>
         {results.length > 0 && (
-          <Flex mt="5" direction="column" gap="4" width="100%">
-            {results.map(work => <InfoCard key={work.id} infoData={work} />)}
-            <nav aria-label="Search result pages">
-              <Pagenator count={count} currentPage={page} onPageChange={next => navigate(searchUrl(query, next))} />
-            </nav>
-          </Flex>
+          <WorkList
+            mt="5"
+            items={results}
+            count={count}
+            currentPage={page}
+            onPageChange={next => navigate(searchUrl(query, next))}
+            navLabel="Search result pages"
+          />
         )}
       </Container>
     </main>
