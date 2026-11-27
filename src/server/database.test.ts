@@ -214,3 +214,25 @@ test('creating new sessions and OIDC requests prunes expired rows', (t) => {
   assert.strictEqual(database.consumeOidcRequest('abandoned-state'), null)
   assert.strictEqual(database.consumeOidcRequest('fresh-state')?.returnTo, '/bookmarks')
 })
+
+test('blurred tags normalize, deduplicate, and cascade on user deletion', (t) => {
+  const database = useDatabase(t)
+  const user = createUser(database)
+  const internal = (database as unknown as { db: Database.Database }).db
+
+  assert.strictEqual(database.addBlurredTag(user.id, '  Female:Guro '), 'female:guro')
+  assert.strictEqual(database.addBlurredTag(user.id, 'female:guro'), 'female:guro')
+  assert.strictEqual(database.addBlurredTag(user.id, 'guro'), 'guro')
+  assert.deepStrictEqual(database.listBlurredTags(user.id), ['female:guro', 'guro'])
+
+  for (const invalid of ['', '   ', 'x'.repeat(201)]) {
+    assert.throws(() => database.addBlurredTag(user.id, invalid), /Tag/)
+  }
+
+  assert.strictEqual(database.removeBlurredTag(user.id, '  FEMALE:GURO '), true)
+  assert.strictEqual(database.removeBlurredTag(user.id, 'female:guro'), false)
+  assert.deepStrictEqual(database.listBlurredTags(user.id), ['guro'])
+
+  internal.prepare('DELETE FROM users WHERE id = ?').run(user.id)
+  assert.deepStrictEqual(database.listBlurredTags(user.id), [])
+})

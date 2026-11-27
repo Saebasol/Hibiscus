@@ -72,6 +72,14 @@ function assertPositiveSafeInteger(value: number, name: string): void {
   }
 }
 
+function normalizeTag(tag: string): string {
+  const normalized = tag.trim().toLowerCase()
+  if (!normalized || normalized.length > 200) {
+    throw new Error('Tag must be between 1 and 200 characters')
+  }
+  return normalized
+}
+
 export default class HibiscusDatabase {
   private readonly db: Database.Database
 
@@ -123,12 +131,21 @@ export default class HibiscusDatabase {
         PRIMARY KEY(user_id, work_id)
       );
 
+      CREATE TABLE IF NOT EXISTS blurred_tags (
+        user_id INTEGER NOT NULL REFERENCES users ON DELETE CASCADE,
+        tag TEXT NOT NULL,
+        created_at INTEGER NOT NULL,
+        PRIMARY KEY(user_id, tag)
+      );
+
       CREATE INDEX IF NOT EXISTS idx_sessions_expires_at
         ON sessions(expires_at);
       CREATE INDEX IF NOT EXISTS idx_oidc_requests_expires_at
         ON oidc_requests(expires_at);
       CREATE INDEX IF NOT EXISTS idx_bookmarks_user_created_at
         ON bookmarks(user_id, created_at DESC, work_id DESC);
+      CREATE INDEX IF NOT EXISTS idx_blurred_tags_user_created_at
+        ON blurred_tags(user_id, created_at ASC, tag ASC);
     `)
 
     this.pruneExpired()
@@ -302,6 +319,42 @@ export default class HibiscusDatabase {
     const result = this.db.prepare(`
       DELETE FROM bookmarks WHERE user_id = ? AND work_id = ?
     `).run(userId, workId)
+
+    return result.changes > 0
+  }
+
+  listBlurredTags(userId: number): string[] {
+    const rows = this.db.prepare(`
+      SELECT tag
+      FROM blurred_tags
+      WHERE user_id = ?
+      ORDER BY created_at ASC, tag ASC
+    `).all(userId) as { tag: string }[]
+
+    return rows.map((row) => row.tag)
+  }
+
+  addBlurredTag(userId: number, tag: string): string {
+    assertPositiveSafeInteger(userId, 'userId')
+    const normalized = normalizeTag(tag)
+
+    this.db.prepare(`
+      INSERT INTO blurred_tags (user_id, tag, created_at)
+      VALUES (?, ?, ?)
+      ON CONFLICT(user_id, tag) DO NOTHING
+    `).run(userId, normalized, Date.now())
+
+    return normalized
+  }
+
+  removeBlurredTag(userId: number, tag: string): boolean {
+    assertPositiveSafeInteger(userId, 'userId')
+    const normalized = tag.trim().toLowerCase()
+    if (!normalized) return false
+
+    const result = this.db.prepare(`
+      DELETE FROM blurred_tags WHERE user_id = ? AND tag = ?
+    `).run(userId, normalized)
 
     return result.changes > 0
   }

@@ -50,4 +50,44 @@ export function registerBookmarkRoutes(server: FastifyInstance, database: Hibisc
     database.removeBookmark(user.id, id)
     return reply.header('cache-control', 'no-store').send({ bookmarked: false })
   })
+
+  server.get('/internal/blurred-tags', async (request, reply) => {
+    const user = authenticatedUser(request)
+    if (!server.authEnabled || !database || !user) {
+      return reply.code(401).header('cache-control', 'no-store').send({ error: 'Authentication required' })
+    }
+    return reply.header('cache-control', 'no-store').send({ tags: database.listBlurredTags(user.id) })
+  })
+
+  server.put<{ Body: { tag?: unknown } }>('/internal/blurred-tags', async (request, reply) => {
+    if (!isSameOrigin(request)) return reply.code(403).send({ error: 'Cross-origin request rejected' })
+    const user = authenticatedUser(request)
+    if (!server.authEnabled || !database || !user) {
+      return reply.code(401).header('cache-control', 'no-store').send({ error: 'Authentication required' })
+    }
+
+    const tag = typeof request.body?.tag === 'string' ? request.body.tag.trim() : ''
+    if (!tag || tag.length > 200) {
+      return reply.code(400).send({ error: 'A valid tag is required' })
+    }
+
+    database.addBlurredTag(user.id, tag)
+    return reply.header('cache-control', 'no-store').send({ tags: database.listBlurredTags(user.id) })
+  })
+
+  server.delete<{ Params: { tag: string } }>('/internal/blurred-tags/:tag', async (request, reply) => {
+    if (!isSameOrigin(request)) return reply.code(403).send({ error: 'Cross-origin request rejected' })
+    const user = authenticatedUser(request)
+    if (!server.authEnabled || !database || !user) {
+      return reply.code(401).header('cache-control', 'no-store').send({ error: 'Authentication required' })
+    }
+
+    const tag = request.params.tag.trim()
+    if (!tag || tag.length > 200) {
+      return reply.code(400).send({ error: 'A valid tag is required' })
+    }
+
+    database.removeBlurredTag(user.id, tag)
+    return reply.header('cache-control', 'no-store').send({ tags: database.listBlurredTags(user.id) })
+  })
 }

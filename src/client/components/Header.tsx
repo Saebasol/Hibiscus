@@ -1,6 +1,7 @@
 import { Box, Button, Flex, Heading, IconButton } from "@radix-ui/themes";
 import { BookmarkIcon, ExitIcon } from "@radix-ui/react-icons";
 import SearchBar from "./SearchBar";
+import { BlurredTagsDialog } from "./BlurredTags";
 import { Link } from "react-router";
 import { useTypedRouteContext } from "../utils/useRouteContext";
 
@@ -30,6 +31,7 @@ const Header = () => {
 
           <Flex gap="2" align="center">
             <SearchBar />
+            <BlurredTagsDialog />
             {state.authEnabled && (state.currentUser ? (
               <>
                 <IconButton asChild size="2" variant="solid" color="gray" aria-label="Bookmarks" title="Bookmarks">

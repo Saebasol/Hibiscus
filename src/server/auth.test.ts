@@ -80,6 +80,11 @@ test('OIDC and bookmark routes support a complete signed-in session', async t =>
       method: 'PUT', url: '/internal/bookmarks/999',
       headers: { cookie: disabledCookie, origin: publicOrigin, 'content-type': 'application/json' }, payload: { title: 'Blocked' },
     })).statusCode, 401)
+    assert.equal((await disabledApp.inject({ url: '/internal/blurred-tags', headers: { cookie: disabledCookie } })).statusCode, 401)
+    assert.equal((await disabledApp.inject({
+      method: 'PUT', url: '/internal/blurred-tags',
+      headers: { cookie: disabledCookie, origin: publicOrigin, 'content-type': 'application/json' }, payload: { tag: 'female:guro' },
+    })).statusCode, 401)
   }
   assert.equal(publicDatabase.listBookmarks(oldUser.id)[0].title, 'Must stay private')
 
@@ -229,6 +234,26 @@ test('OIDC and bookmark routes support a complete signed-in session', async t =>
   const removed = await app.inject({ method: 'DELETE', url: '/internal/bookmarks/123', headers: { cookie: sessionCookie, origin: publicOrigin } })
   assert.equal(removed.statusCode, 200)
   assert.deepEqual(database.listBookmarks(1), [])
+
+  assert.equal((await app.inject({ url: '/internal/blurred-tags' })).statusCode, 401)
+  const addedBlur = await app.inject({
+    method: 'PUT', url: '/internal/blurred-tags',
+    headers: { cookie: sessionCookie, origin: publicOrigin, 'content-type': 'application/json' },
+    payload: { tag: 'Female:Guro' },
+  })
+  assert.equal(addedBlur.statusCode, 200)
+  assert.deepEqual(addedBlur.json(), { tags: ['female:guro'] })
+  assert.equal((await app.inject({
+    method: 'PUT', url: '/internal/blurred-tags',
+    headers: { cookie: sessionCookie, origin: 'https://attacker.example', 'content-type': 'application/json' },
+    payload: { tag: 'guro' },
+  })).statusCode, 403)
+  const removedBlur = await app.inject({
+    method: 'DELETE', url: '/internal/blurred-tags/' + encodeURIComponent('female:guro'),
+    headers: { cookie: sessionCookie, origin: publicOrigin },
+  })
+  assert.equal(removedBlur.statusCode, 200)
+  assert.deepEqual(removedBlur.json(), { tags: [] })
 
   const logout = await app.inject({
     method: 'POST', url: '/auth/logout', payload: '',
