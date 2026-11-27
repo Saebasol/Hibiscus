@@ -12,7 +12,7 @@ import { type RawInfoData } from "@saebasol/delphinium"
 
 const InfoCard = ({ infoData }: { infoData: RawInfoData }) => {
   return (
-    <Box width="90%">
+    <Box width="100%">
       <Card size="3" >
         <Flex direction="column" gap="4">
           <Heading size={{ initial: '4', sm: '6' }} weight="bold" color="gray" >

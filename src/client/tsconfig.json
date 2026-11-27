@@ -17,8 +17,8 @@
     ],
     "baseUrl": "../../",
     "paths": {
-      "$app/*": [
-        "./node_modules/@fastify/react/virtual-ts/*"
+      "$app/core.tsx": [
+        "./src/client/types/fastify-react.d.ts"
       ]
     }
   },

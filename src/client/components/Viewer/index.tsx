@@ -1,144 +1,49 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { createMangaViewer } from "@yui540/comimi";
-import type { ViewerProps } from "./types";
+import { useLayoutEffect, useRef, useState } from 'react'
+import { Grid } from '@radix-ui/themes'
+import type { ReadingDirection, ViewerProps } from './types'
+import type { ImageSize } from './ReaderPage'
+import { usePageNavigation } from './usePageNavigation'
+import ViewerHeader from './ViewerHeader'
+import PageTrack from './PageTrack'
+import WebtoonTrack from './WebtoonTrack'
+import PageControls from './PageControls'
+import PageOverviewDialog from './PageOverviewDialog'
 
-const getHashPageIndex = (hashValue: string, totalPages: number) => {
-  if (!hashValue) return null;
-  const raw = Number(hashValue.replace("#", ""));
-  if (!Number.isFinite(raw) || raw < 1) return null;
-  const clamped = Math.min(raw, totalPages);
-  return clamped - 1;
-};
+export default function Viewer({ images, mangaId, title }: ViewerProps) {
+  const reader = useRef<HTMLElement>(null)
+  const [direction, setDirection] = useState<ReadingDirection>('rtl')
+  const [webtoon, setWebtoon] = useState(false)
+  const [imageSize, setImageSize] = useState<ImageSize>('page')
+  const [overview, setOverview] = useState(false)
+  const readingDirection = webtoon ? 'ltr' : direction
+  const { track, page, goTo, moveBy, syncScroll } = usePageNavigation(mangaId, images.length, readingDirection, overview, webtoon)
 
-const Viewer = ({ images, mangaId, title, author }: ViewerProps) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const viewerRef = useRef<ReturnType<typeof createMangaViewer> | null>(null);
-  const [hash, setHash] = useState("");
-  const currentPageIndexRef = useRef<number | null>(null);
+  useLayoutEffect(() => {
+    try { setWebtoon(localStorage.getItem('hibiscus.readingMode') === 'webtoon') } catch { /* Storage is optional. */ }
+  }, [])
 
-  const pages = useMemo(() => {
-    return images.map((image, index) => ({
-      id: `${mangaId}-${index}`,
-      type: "image" as const,
-      src: image.url,
-      thumbnailSrc: image.thumbnailUrl ?? image.url,
-      width: image.dimensions.width,
-      height: image.dimensions.height,
-      alt: `page-${index + 1}`,
-      label: String(index + 1)
-    }));
-  }, [images, mangaId]);
-
-  // 1. Viewer Initialization & Mount
-  // - Creates the comimi viewer instance and attaches it to the DOM container.
-  // - Reads the URL hash (#) on initial load to render the corresponding page.
-  // - Registers an event listener to update the URL hash whenever the page turns.
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container || pages.length === 0 || viewerRef.current) {
-      return;
-    }
-
-    const initialHash = typeof window === "undefined" ? "" : window.location.hash;
-    const initialPageIndex = getHashPageIndex(initialHash, pages.length) ?? 0;
-
-    currentPageIndexRef.current = initialPageIndex;
-    
-    viewerRef.current = createMangaViewer(container, {
-      manga: {
-        id: mangaId,
-        title,
-        author,
-        pages
-      },
-      initialPageIndex,
-      settings: {
-        layoutMode: "browserFullscreen",
-        backgroundColor: "black",
-      },
-      locale: "en",
-      events: {
-        pageChange: ({ pageIndex }) => {
-          currentPageIndexRef.current = pageIndex;
-          if (typeof window === "undefined") return;
-          
-          const nextHash = `#${pageIndex + 1}`;
-          if (window.location.hash !== nextHash) {
-            window.history.replaceState(null, "", nextHash);
-            setHash(nextHash);
-          }
-        }
-      }
-    });
-    
-    container.focus();
-  }, [author, mangaId, title, pages]);
-
-  // 2. Viewer Instance Cleanup
-  // - Destroys the viewer instance when the component unmounts to prevent memory leaks.
-  useEffect(() => {
-    return () => {
-      viewerRef.current?.destroy();
-      viewerRef.current = null;
-    };
-  }, []);
-
-  // 3. Manga Data Synchronization
-  // - Updates the viewer's internal data (title, author, pages) when props change,
-  //   without completely recreating the viewer instance.
-  useEffect(() => {
-    if (!viewerRef.current) return;
-    viewerRef.current.setManga({
-      id: mangaId,
-      title,
-      author,
-      pages
-    });
-  }, [author, mangaId, title, pages]);
-
-  // 4. Programmatic Navigation
-  // - Forces the viewer to navigate to the target page when the 'hash' state changes.
-  // - Only triggers if the target page differs from the current page to prevent infinite loops.
-  useEffect(() => {
-    if (!viewerRef.current) return;
-    const index = getHashPageIndex(hash, pages.length);
-    if (index === null) return;
-
-    if (currentPageIndexRef.current !== index) {
-      viewerRef.current.goToPage(index);
-      currentPageIndexRef.current = index;
-    }
-  }, [hash, pages.length]);
-
-  // 5. Browser History Tracking
-  // - Listens for 'hashchange' events triggered by the browser's 'Back' or 'Forward' buttons.
-  // - Synchronizes the React 'hash' state, which subsequently triggers the navigation effect (Hook 4).
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    
-    setHash(window.location.hash);
-    
-    const handleHashChange = () => {
-      setHash(window.location.hash);
-    };
-    
-    window.addEventListener("hashchange", handleHashChange);
-    return () => {
-      window.removeEventListener("hashchange", handleHashChange);
-    };
-  }, []);
+  function toggleWebtoon() {
+    setWebtoon(!webtoon)
+    try { localStorage.setItem('hibiscus.readingMode', webtoon ? 'horizontal' : 'webtoon') } catch { /* Storage is optional. */ }
+  }
 
   return (
-    <div
-      ref={containerRef}
-      style={{
-        height: "100vh",
-        width: "100%",
-        outline: "none"
-      }}
-      tabIndex={0}
-    />
-  );
-};
-
-export default Viewer;
+    <Grid asChild height="100dvh" rows="auto minmax(0, 1fr) auto" style={{ background: 'var(--gray-1)' }}>
+      <main ref={reader}>
+        <ViewerHeader reader={reader} title={title} imageSize={imageSize} direction={direction}
+          webtoon={webtoon} onToggleWebtoon={toggleWebtoon}
+          onSizeChange={setImageSize} onToggleDirection={() => setDirection(dir => dir === 'rtl' ? 'ltr' : 'rtl')} />
+        {webtoon ? (
+          <WebtoonTrack track={track} images={images} onScroll={syncScroll} />
+        ) : (
+          <PageTrack track={track} images={images} page={page} direction={direction} imageSize={imageSize}
+            onMove={moveBy} onScroll={syncScroll} onToggleZoom={() => setImageSize(size => size === 'zoom' ? 'page' : 'zoom')} />
+        )}
+        <PageControls page={page} total={images.length} direction={readingDirection} onGoTo={goTo} onMove={moveBy}>
+          <PageOverviewDialog images={images} page={page} container={reader.current}
+            open={overview} onOpenChange={setOverview} onSelect={goTo} />
+        </PageControls>
+      </main>
+    </Grid>
+  )
+}

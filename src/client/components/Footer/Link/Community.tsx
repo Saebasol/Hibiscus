@@ -10,7 +10,7 @@ const FooterLinkCommunity = () => {
       <Link size="2" color="gray" href="#">Changelog</Link>
       <Flex direction="column" gap="1">
         <Link size="2" color="gray" href="https://discord.saebasol.org" style={{ display: 'flex', alignItems: 'center' }}>
-          <DiscordLogoIcon style={{ marginRight: '6px' }} />
+          <DiscordLogoIcon style={{ marginRight: '0.375rem' }} />
           Discord
         </Link>
       </Flex>

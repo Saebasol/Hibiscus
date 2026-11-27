@@ -1,3 +1,5 @@
+export type ReadingDirection = 'ltr' | 'rtl'
+
 interface Dimensions {
   width: number
   height: number
@@ -13,6 +15,5 @@ export interface ViewerProps {
   images: Image[]
   mangaId: string
   title: string
-  author?: string
 }
 

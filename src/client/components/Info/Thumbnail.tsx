@@ -1,13 +1,14 @@
+import { developmentThumbnail } from "../../utils/developmentThumbnail"
 import { Link } from "@radix-ui/themes"
 import { useState, useEffect, useRef } from "react"
 
 const InfoThumbnail = ({ id }: { id: number }) => {
-  const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null)
+  const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(developmentThumbnail ?? null)
   const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const element = containerRef.current
-    if (!element) return
+    if (developmentThumbnail || !element) return
 
     const observer = new IntersectionObserver(
       async (entries) => {
@@ -18,7 +19,7 @@ const InfoThumbnail = ({ id }: { id: number }) => {
           setThumbnailUrl(data.url)
         }
       },
-      { rootMargin: "200px" }
+      { rootMargin: "25% 0%" }
     )
 
     observer.observe(element)
@@ -32,7 +33,7 @@ const InfoThumbnail = ({ id }: { id: number }) => {
         style={{
           width: "12.5rem",
           height: "17.5rem",
-          borderRadius: "8px",
+          borderRadius: "0.5rem",
           backgroundColor: "var(--gray-5)",
           overflow: "hidden",
           flexShrink: 0,

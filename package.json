@@ -22,7 +22,6 @@
     "@saebasol/delphinium": "^1.7.0",
     "@unhead/react": "^2.1.16",
     "@yaireo/tagify": "^4.38.0",
-    "@yui540/comimi": "^0.17.0",
     "fastify": "^5.10.0",
     "history": "^5.3.0",
     "minipass": "^7.1.3",

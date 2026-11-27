@@ -7,7 +7,7 @@ const Footer = () => {
   return (
     <Box
       style={{
-        borderTop: '1px solid var(--gray-6)',
+        borderTop: '0.0625rem solid var(--gray-6)',
       }}
       py="6"
       px="4"

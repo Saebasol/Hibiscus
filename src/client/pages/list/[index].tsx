@@ -1,15 +1,16 @@
 
 import InfoCard from '../../components/Info'
-import { Flex } from '@radix-ui/themes'
+import { Container, Flex } from '@radix-ui/themes'
 import { type RawListResultDTOData } from '@saebasol/delphinium'
 import Pagenator from '../../components/Pagenator'
 import { useNavigate } from 'react-router'
-import type { ServerRouteContext } from '../../types/RouteContext'
+import type { RouteError, ServerRouteContext } from '../../types/RouteContext'
 import { useTypedRouteContext } from '../../utils/useRouteContext'
 
 interface ListData {
   result: RawListResultDTOData
   index: number
+  error?: RouteError
 }
 
 type ListServerContext = ServerRouteContext<{
@@ -17,23 +18,27 @@ type ListServerContext = ServerRouteContext<{
 }, ListData>
 
 export const getData = async (ctx: ListServerContext): Promise<ListData> => {
-  const index = Number(ctx.req.params.index) || 1
+  const value = ctx.req.params.index
+  const index = Number(value)
+  const empty = { items: [], count: 0 } as RawListResultDTOData
 
-  const response = await fetch(ctx.state.baseUrl + `/internal/list/${index}`)
-
-  if (!response.ok) {
-    return {
-      result: { items: [], count: 0 } as RawListResultDTOData,
-      index: index
-    }
-  }
-  const data = await response.json() as RawListResultDTOData
-
-  return {
-    result: data,
-    index: index
+  if (!/^\d+$/.test(value) || !Number.isSafeInteger(index) || index < 1) {
+    ctx.reply.code(404)
+    return { result: empty, index, error: { kind: 'invalid-page', firstPageUrl: '/list/1' } }
   }
 
+  const response = await ctx.server.inject({ method: 'GET', url: `/internal/list/${index}` })
+  if (response.statusCode !== 200) {
+    ctx.reply.code(502)
+    return { result: empty, index, error: { kind: 'unavailable', resource: 'library', retryUrl: `/list/${index}` } }
+  }
+
+  const result = response.json<RawListResultDTOData>()
+  if (index > 1 && !result.items.length) {
+    ctx.reply.code(404)
+    return { result: empty, index, error: { kind: 'invalid-page', firstPageUrl: '/list/1' } }
+  }
+  return { result, index }
 }
 
 const Index = () => {
@@ -44,28 +49,23 @@ const Index = () => {
     navigate(`/list/${page}`,)
   }
 
-
   return (
-    <Flex
-      m="4"
-      direction="column"
-      gap="4"
-      align="center"
-    >
-      {
-        data.result.items.map((item) => (
-          <InfoCard
-            key={item.id}
-            infoData={item}
-          />
-        ))
-      }
-      <Pagenator
-        count={data.result.count}
-        currentPage={Number(data.index)}
-        onPageChange={onPageChange}
-      />
-    </Flex>
+    <main>
+      <Container size="4" px="4" py={{ initial: '5', sm: '7' }}>
+        <Flex direction="column" gap="4" width="100%">
+          {data.result.items.map(item => (
+            <InfoCard key={item.id} infoData={item} />
+          ))}
+          <nav aria-label="List pages">
+            <Pagenator
+              count={data.result.count}
+              currentPage={Number(data.index)}
+              onPageChange={onPageChange}
+            />
+          </nav>
+        </Flex>
+      </Container>
+    </main>
   )
 }
 

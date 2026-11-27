@@ -27,8 +27,8 @@ const SearchBar = () => {
           caretColor: 'transparent',
           outlineStyle: isHovered ? 'solid' : 'none',
           outlineColor: isHovered ? 'var(--focus-8)' : 'transparent',
-          outlineWidth: isHovered ? '2px' : '0',
-          outlineOffset: isHovered ? '-1px' : '0',
+          outlineWidth: isHovered ? '0.125rem' : '0',
+          outlineOffset: isHovered ? '-0.0625rem' : '0',
         }}
         aria-haspopup="dialog"
       >

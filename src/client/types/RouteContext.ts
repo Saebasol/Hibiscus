@@ -9,6 +9,17 @@ export interface AppState {
   baseUrl: string
 }
 
+export type RouteError =
+  | { kind: 'not-found' }
+  | { kind: 'invalid-id' }
+  | { kind: 'empty-work' }
+  | { kind: 'invalid-page'; firstPageUrl: string }
+  | { kind: 'unavailable'; resource: 'work' | 'search results' | 'library'; retryUrl: string }
+
+export interface RouteErrorData {
+  error?: RouteError
+}
+
 export interface RouteContext<
   Data = unknown,
   State = AppState,
