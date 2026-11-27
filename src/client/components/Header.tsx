@@ -1,6 +1,6 @@
 import { Box, Flex, Heading } from "@radix-ui/themes";
 import SearchBar from "./SearchBar";
-import SearchDialog from "./SearchBar/Dialog";
+import { Link } from "react-router";
 
 const Header = () => {
   return (
@@ -13,7 +13,7 @@ const Header = () => {
           zIndex: 1000,
           height: '4rem',
           backgroundColor: 'var(--color-background)',
-          borderBottom: '1px solid var(--gray-6)'
+          borderBottom: '0.0625rem solid var(--gray-6)'
         }}
         asChild
       >
@@ -25,7 +25,9 @@ const Header = () => {
             px="3"
           >
             <Heading size="5" weight="bold">
-              Hibiscus
+              <Link to="/list/1" style={{ color: 'inherit', textDecoration: 'none' }}>
+                Hibiscus
+              </Link>
             </Heading>
 
             <Flex gap="3">

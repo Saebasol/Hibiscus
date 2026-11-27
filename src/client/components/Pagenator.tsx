@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Flex, Button, IconButton, TextField, Box } from '@radix-ui/themes';
 import { ChevronLeftIcon, ChevronRightIcon } from '@radix-ui/react-icons';
+import { PAGE_SIZE } from '../utils/catalog';
 
 type PaginatorProps = {
   count: number;
@@ -14,7 +15,7 @@ type JumpState = {
 };
 
 export default function Paginator({ count, currentPage, onPageChange }: PaginatorProps) {
-  const totalPages = Math.ceil(count / 15); // Assuming 15 items per page as default
+  const totalPages = Math.ceil(count / PAGE_SIZE);
   const [jumpState, setJumpState] = useState<JumpState | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -25,7 +26,7 @@ export default function Paginator({ count, currentPage, onPageChange }: Paginato
   }, [jumpState]);
 
   const goToPage = (page: number) => {
-    if (page >= 1 && page <= totalPages && page !== currentPage) {
+    if (Number.isSafeInteger(page) && page >= 1 && page <= totalPages && page !== currentPage) {
       onPageChange(page);
       setJumpState(null);
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -70,6 +71,7 @@ export default function Paginator({ count, currentPage, onPageChange }: Paginato
   return (
     <Flex justify="center" gap={{ initial: "1", sm: "2" }} align="center">
       <IconButton
+        aria-label="Previous page"
         variant="outline"
         size={{ initial: '1', sm: '2' }}
         disabled={currentPage === 1}
@@ -90,6 +92,7 @@ export default function Paginator({ count, currentPage, onPageChange }: Paginato
               size={{ initial: '1', sm: '2' }}
               ref={inputRef}
               type="number"
+              aria-label="Jump to page"
               min={1}
               max={totalPages}
               placeholder={currentPage.toString()}
@@ -111,6 +114,7 @@ export default function Paginator({ count, currentPage, onPageChange }: Paginato
         return (
           <Button
             key={isJump ? jumpKey : idx}
+            aria-current={page === currentPage ? 'page' : undefined}
             variant={page === currentPage ? 'solid' : 'outline'}
             size={{ initial: '1', sm: '2' }}
             onClick={() => isJump
@@ -124,6 +128,7 @@ export default function Paginator({ count, currentPage, onPageChange }: Paginato
       })}
 
       <IconButton
+        aria-label="Next page"
         variant="outline"
         size={{ initial: '1', sm: '2' }}
         disabled={currentPage === totalPages}

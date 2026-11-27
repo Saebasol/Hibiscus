@@ -1,15 +1,22 @@
 import { Cross1Icon } from "@radix-ui/react-icons";
-import { Dialog, Flex, IconButton, RadioCards, ScrollArea, Text, VisuallyHidden } from "@radix-ui/themes";
+import { Dialog, Flex, IconButton, RadioCards, ScrollArea, Text } from "@radix-ui/themes";
 import { useOpenSearchDialog, useSearchInputData } from "./context";
 import SearchInput, { pattern } from "./Input";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import type { RawSearchResultData } from "@saebasol/delphinium";
 import SearchResultItem from "./ResultItem";
+import { searchUrl } from "../../utils/catalog";
 
 const SearchDialog = () => {
+  const navigate = useNavigate();
   const [openSearchDialog, setOpenSearchDialog] = useOpenSearchDialog();
   const [searchInputData, setSearchInputData] = useSearchInputData();
   const [searchResults, setSearchResults] = useState<RawSearchResultData | null>(null);
+  const query = [...searchInputData.tags];
+  if (searchInputData.title && !pattern.test(searchInputData.title)) {
+    query.push(searchInputData.title);
+  }
 
   useEffect(() => {
     setSearchInputData({ title: "", tags: [] });
@@ -22,14 +29,6 @@ const SearchDialog = () => {
         count: 0,
       });
       return;
-    }
-
-    const query = [
-      ...searchInputData.tags,
-    ]
-
-    if (searchInputData.title && !pattern.test(searchInputData.title)) {
-      query.push(searchInputData.title);
     }
 
     try {
@@ -76,20 +75,18 @@ const SearchDialog = () => {
           e.preventDefault();
         }
       }}>
-        <VisuallyHidden>
-          <Dialog.Title>
-            Search the works
-          </Dialog.Title>
-        </VisuallyHidden>
         <Flex
           gap="4"
           direction="column"
         >
           <Flex
             width="100%"
-            justify="end"
+            align="center"
+            justify="between"
           >
+            <Dialog.Title mb="0">Search</Dialog.Title>
             <IconButton
+              aria-label="Close search"
               variant="ghost"
               size="2"
               onClick={() => setOpenSearchDialog(false)}
@@ -97,7 +94,10 @@ const SearchDialog = () => {
               <Cross1Icon />
             </IconButton>
           </Flex>
-          <SearchInput />
+          <SearchInput onSubmit={value => {
+            setOpenSearchDialog(false);
+            navigate(value ? searchUrl(value) : "/search");
+          }} />
           <ScrollArea scrollbars="vertical" style={{ height: "50vh" }}>
             <RadioCards.Root
               columns={{ initial: "1", sm: "1" }}

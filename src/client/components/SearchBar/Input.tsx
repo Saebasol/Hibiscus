@@ -1,12 +1,11 @@
 import Tags from '@yaireo/tagify/react'
-import { type AddEventData, type ChangeEventData, type InputEventData, type TagData } from '@yaireo/tagify';
-import '@yaireo/tagify/dist/tagify.css';
-import './Input.css';
+import { type ChangeEventData, type InputEventData, type TagData } from '@yaireo/tagify';
 import { useEffect, useRef, useState } from 'react';
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
-import { Box, Spinner } from '@radix-ui/themes';
+import { Box, Button, Flex, Spinner } from '@radix-ui/themes';
 import { useSearchInputData } from './context';
-import { Tags as HeliotropeTags } from '@saebasol/delphinium'
+import type { Tags as HeliotropeTags } from '@saebasol/delphinium'
+import { plainQuery, tagToken } from '../../utils/catalog'
 
 // Define the Tagify type
 interface CustomTagify extends Tagify<TagData> {
@@ -23,17 +22,44 @@ interface CustomTagify extends Tagify<TagData> {
 
 export const pattern = /-?(?:female:|male:|tag:|artist:|character:|group:|type:|series:|language:)/
 
-
-
-const scrolltoCarret = (e: CustomEvent<AddEventData<TagData>>) => {
-  const dom = e.detail.tagify.DOM
-  dom.scope.scrollLeft = dom.scope.scrollWidth;
+function tagifyInitialValue(query?: string) {
+  if (query === undefined) return undefined;
+  return query.trim().replaceAll(/[\r\n\u2028\u2029]+/g, ' ').split(/(\s+)/).map(part =>
+    tagToken(part) ? `[[${JSON.stringify({ value: part })}]]` : part
+  ).join('');
 }
 
+function tagBeforeCaret(input: HTMLElement) {
+  const selection = window.getSelection();
+  if (!selection?.isCollapsed || !selection.rangeCount) return null;
+  const range = selection.getRangeAt(0);
+  if (!input.contains(range.startContainer)) return null;
 
-const SearchInput = () => {
+  let node: Node | null = range.startContainer;
+  if (node.nodeType === Node.TEXT_NODE) {
+    if (node.parentElement?.closest('tag')) return null;
+    const beforeCaret = node.textContent?.slice(0, range.startOffset) ?? '';
+    if (beforeCaret.replace(/[\u200B\u2060\uFEFF]/g, '')) return null;
+    node = node.previousSibling;
+  } else if (node === input) {
+    node = node.childNodes[range.startOffset - 1] ?? null;
+  } else {
+    return null;
+  }
+
+  while (node && (node.nodeName === 'BR' ||
+    (node.nodeType === Node.TEXT_NODE && !node.textContent?.replace(/[\u200B\u2060\uFEFF]/g, '')))) {
+    node = node.previousSibling;
+  }
+  return node instanceof HTMLElement && node.tagName === 'TAG' ? node : null;
+}
+
+const SearchInput = ({ onSubmit, query }: { onSubmit: (query: string) => void; query?: string }) => {
   const tagifyRef = useRef<Tagify<TagData>>(undefined);
-  const [loading, setLoading] = useState(false);
+  const submit = () => {
+    if (tagifyRef.current) onSubmit(plainQuery(tagifyRef.current));
+  };
+  const [loading, setLoading] = useState(true);
   const [searchInputData, setSearchInputData] = useSearchInputData();
   const [autoCompleteTags, setAutoCompleteTags] = useState<HeliotropeTags>({
     artists: [],
@@ -47,29 +73,20 @@ const SearchInput = () => {
     language: []
   });
 
-  const requestGetAutoCompleteTags = async () => {
-    setLoading(true);
-    tagifyRef.current?.setPlaceholder("Loading tags...");
-    const response = await fetch('/internal/tags', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      cache: 'force-cache',
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch autocomplete tags');
-    }
-
-    const data = (await response.json()) as HeliotropeTags;
-    setAutoCompleteTags(data);
-    tagifyRef.current?.setPlaceholder("Search the works...");
-    setLoading(false);
-  }
-
   useEffect(() => {
-    requestGetAutoCompleteTags();
+    const controller = new AbortController();
+    async function loadTags() {
+      try {
+        const response = await fetch('/internal/tags', { signal: controller.signal, cache: 'force-cache' });
+        if (response.ok) setAutoCompleteTags(await response.json());
+      } catch {
+        // Typed searches still work when suggestions are unavailable.
+      } finally {
+        if (!controller.signal.aborted) setLoading(false);
+      }
+    }
+    void loadTags();
+    return () => controller.abort();
   }, []);
 
   const transformTag = (tag: TagData) => {
@@ -139,77 +156,93 @@ const SearchInput = () => {
   }
 
   useEffect(() => {
-    if (tagifyRef.current) {
-      const inputElement = tagifyRef.current.DOM?.input;
-      if (inputElement) {
-        inputElement.setAttribute('aria-multiline', 'false');
-        inputElement.removeAttribute('tagify--mix')
-      }
+    const tagify = tagifyRef.current;
+    if (!tagify) return;
 
-      const dropdown = tagifyRef.current.DOM?.dropdown;
-      if (dropdown) {
-        const handlePointerDown = () => {
-          if (tagifyRef.current) {
-            (tagifyRef.current as CustomTagify).state.actions.selectOption = true;
-          }
-        };
-        dropdown.addEventListener('pointerdown', handlePointerDown);
-        return () => {
-          dropdown.removeEventListener('pointerdown', handlePointerDown);
-        };
-      }
-    }
+    const inputElement = tagify.DOM.input;
+    const dropdown = tagify.DOM.dropdown;
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    inputElement.setAttribute('aria-multiline', 'false');
+    inputElement.removeAttribute('tagify--mix')
 
+    const handleBeforeInput = (event: InputEvent) => {
+      if (!isIOS || event.defaultPrevented || event.inputType !== 'deleteContentBackward') return;
+      const tag = tagBeforeCaret(inputElement);
+      if (!tag) return;
+
+      event.preventDefault();
+      const caret = document.createRange();
+      caret.setStartBefore(tag);
+      caret.collapse(true);
+      void Promise.resolve(tagify.removeTags(tag, false, 0)).then(() => {
+        inputElement.focus({ preventScroll: true });
+        const selection = window.getSelection();
+        selection?.removeAllRanges();
+        selection?.addRange(caret);
+      });
+    };
+    const handlePointerDown = () => {
+      (tagify as CustomTagify).state.actions.selectOption = true;
+    };
+
+    inputElement.addEventListener('beforeinput', handleBeforeInput);
+    dropdown?.addEventListener('pointerdown', handlePointerDown);
+    return () => {
+      inputElement.removeEventListener('beforeinput', handleBeforeInput);
+      dropdown?.removeEventListener('pointerdown', handlePointerDown);
+    };
   }, []);
 
   return (
-    <Box className="search-wrapper">
-      {loading ? <Spinner
-        className="search-icon"
-        size="2"
-      /> : <MagnifyingGlassIcon
-        className="search-icon"
-        height="16"
-        width="16"
-      />}
-      <Tags
-        tagifyRef={tagifyRef}
-        settings={{
-          mode: "mix",
-          transformTag: transformTag,
-          pattern: pattern,
-          dropdown: {
-            enabled: 0
-          },
-          autoComplete: {
-            enabled: true
-          },
-          validate: (tag: TagData) => {
-            return pattern.test(tag.value);
-          },
-          editTags: false,
-          hooks: {
-            beforeKeyDown: (event, { tagify }) => {
-              return new Promise((resolve) => {
-                const definedStateTagify = tagify as CustomTagify;
-                if (event.key === "Enter" && !definedStateTagify.state.dropdown.visible && !definedStateTagify.state.tag) {
-                  event.preventDefault();
-                  return false;
-                }
-                if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "z") {
-                  event.preventDefault();
-                }
-                resolve();
-              });
-            }
-          },
-        }}
-        onChange={onChange}
-        onInput={onInput}
-        placeholder="Search the works..."
-        disabled={loading}
-      />
-    </Box>
+    <Flex gap="2" align="center">
+      <Box className="search-wrapper" minWidth="0">
+        <Box className="search-icon">
+          {loading
+            ? <Spinner size="2" role="status" aria-label="Loading search suggestions" />
+            : <MagnifyingGlassIcon height="16" width="16" />}
+        </Box>
+        <Tags
+          tagifyRef={tagifyRef}
+          defaultValue={tagifyInitialValue(query)}
+          settings={{
+            mode: "mix",
+            transformTag: transformTag,
+            pattern: pattern,
+            dropdown: {
+              enabled: 0
+            },
+            autoComplete: {
+              enabled: true
+            },
+            validate: (tag: TagData) => {
+              return pattern.test(tag.value);
+            },
+            editTags: false,
+            hooks: {
+              beforeKeyDown: (event, { tagify }) => {
+                return new Promise((resolve) => {
+                  const definedStateTagify = tagify as CustomTagify;
+                  if (event.key === "Enter" && !event.isComposing && event.keyCode !== 229 && !definedStateTagify.state.dropdown.visible) {
+                    event.preventDefault();
+                    onSubmit(plainQuery(tagify));
+                    return false;
+                  }
+                  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "z") {
+                    event.preventDefault();
+                  }
+                  resolve();
+                });
+              }
+            },
+          }}
+          onChange={onChange}
+          onInput={onInput}
+          placeholder="Search the works..."
+        />
+      </Box>
+      <Button type="button" style={{ flexShrink: 0 }} onClick={submit}>Search</Button>
+    </Flex>
   );
 }
 
