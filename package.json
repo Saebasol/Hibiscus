@@ -10,6 +10,7 @@
     "lint": "oxlint",
     "test:server": "tsx --test src/server/database.test.ts src/server/auth.test.ts",
     "dev": "tsx src/server.ts --dev",
+    "mock:oidc": "node scripts/mock-oidc.mjs",
     "start": "NODE_ENV=production node dist/server.js",
     "build": "pnpm build:client && pnpm build:server",
     "build:server": "tsc --incremental false",

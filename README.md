@@ -34,3 +34,20 @@ Hibiscus can delegate sign-in to a standards-compliant OIDC provider such as Okt
 The three required `OIDC_*` connection values (`OIDC_ISSUER_URL`, `OIDC_CLIENT_ID`, and `OIDC_CLIENT_SECRET`) must be configured together. Leave all three empty to keep authentication disabled: public browsing works normally and **no SQLite database is created or required**, so Hibiscus can run on read-only deployments without persistent storage.
 
 When OIDC is enabled, the SQLite database stores local user mappings, hashed session tokens, one-time OIDC request state, and bookmarks; passwords and OIDC access tokens are not stored. In Docker, mount a persistent volume at `/app/data` (or the directory of `DATABASE_PATH`). Because SQLite runs in WAL mode (`journal_mode = WAL`), back up safely using SQLite's online backup (`sqlite3 ./data/hibiscus.db ".backup '/path/to/backup.db'"` or `VACUUM INTO`) or stop the server before copying the database files (including `-wal` and `-shm` if present).
+
+### Local OIDC development
+
+Run the built-in local mock OIDC provider and start Hibiscus against it:
+
+```bash
+pnpm mock:oidc
+```
+
+```bash
+OIDC_PROVIDER_NAME="Local Mock OIDC" \
+OIDC_ISSUER_URL=http://127.0.0.1:4100 \
+OIDC_CLIENT_ID=hibiscus-local \
+OIDC_CLIENT_SECRET=hibiscus-local-secret \
+OIDC_ALLOW_INSECURE=true \
+pnpm dev
+```
