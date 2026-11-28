@@ -6,20 +6,25 @@ import { matchBlurredTags, useBlurredTags } from "../BlurredTags"
 
 const InfoThumbnail = ({ id, tags = [] }: { id: number; tags?: string[] }) => {
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(developmentThumbnail ?? null)
-  const [loaded, setLoaded] = useState(false)
+  const [loadedUrl, setLoadedUrl] = useState<string | null>(null)
   const [revealed, setRevealed] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
+  const imgRef = useRef<HTMLImageElement>(null)
   const { tags: blurredTags, blurAll } = useBlurredTags()
   const matchedTags = matchBlurredTags(tags, blurredTags)
   const shouldBlur = blurAll || matchedTags.length > 0
   const isBlurred = shouldBlur && !revealed
+  const loaded = Boolean(thumbnailUrl && loadedUrl === thumbnailUrl)
 
   useEffect(() => {
     setRevealed(false)
   }, [id])
 
   useEffect(() => {
-    setLoaded(false)
+    const img = imgRef.current
+    if (thumbnailUrl && img?.complete && img.naturalWidth > 0) {
+      setLoadedUrl(thumbnailUrl)
+    }
   }, [thumbnailUrl])
 
   useEffect(() => {
@@ -61,10 +66,11 @@ const InfoThumbnail = ({ id, tags = [] }: { id: number; tags?: string[] }) => {
       <Link href={`/viewer/${id}`} style={{ display: "block", width: "100%", height: "100%" }}>
         {thumbnailUrl && (
           <img
+            ref={imgRef}
             alt="Thumbnail"
-            loading="lazy"
             src={thumbnailUrl}
-            onLoad={() => setLoaded(true)}
+            onLoad={() => setLoadedUrl(thumbnailUrl)}
+            onError={() => setLoadedUrl(thumbnailUrl)}
             style={{
               width: "100%",
               height: "100%",
