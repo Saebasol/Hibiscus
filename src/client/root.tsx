@@ -1,4 +1,5 @@
 import '@radix-ui/themes/styles.css'
+import './theme.css'
 import '@yaireo/tagify/dist/tagify.css'
 import './components/SearchBar/Input.css'
 

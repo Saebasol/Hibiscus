@@ -279,4 +279,25 @@ export async function registerAuth(server: FastifyInstance, database: HibiscusDa
       .clearCookie(OIDC_COOKIE, { path: '/auth' })
     return reply.redirect('/list/1')
   })
+
+  server.post('/auth/clear-data', async (request, reply) => {
+    if (!isSameOrigin(request)) return reply.code(403).send({ error: 'Cross-origin request rejected' })
+    if (!request.user) {
+      return reply.code(401).header('cache-control', 'no-store').send({ error: 'Authentication required' })
+    }
+    database.clearUserData(request.user.id)
+    return reply.header('cache-control', 'no-store').redirect('/login?notice=data_cleared')
+  })
+
+  server.post('/auth/delete-account', async (request, reply) => {
+    if (!isSameOrigin(request)) return reply.code(403).send({ error: 'Cross-origin request rejected' })
+    if (!request.user) {
+      return reply.code(401).header('cache-control', 'no-store').send({ error: 'Authentication required' })
+    }
+    database.deleteUser(request.user.id)
+    return reply.header('cache-control', 'no-store')
+      .clearCookie(SESSION_COOKIE, { path: '/' })
+      .clearCookie(OIDC_COOKIE, { path: '/auth' })
+      .redirect('/login?notice=account_deleted')
+  })
 }

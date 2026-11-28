@@ -236,3 +236,24 @@ test('blurred tags normalize, deduplicate, and cascade on user deletion', (t) =>
   internal.prepare('DELETE FROM users WHERE id = ?').run(user.id)
   assert.deepStrictEqual(database.listBlurredTags(user.id), [])
 })
+
+test('clearUserData wipes saved data while deleteUser removes the account', (t) => {
+  const database = useDatabase(t)
+  const user = createUser(database)
+  database.createSession(user.id, 'keep-session', 60)
+  database.addBookmark(user.id, 100, 'Saved work')
+  database.addBlurredTag(user.id, 'female:guro')
+
+  database.clearUserData(user.id)
+  assert.deepStrictEqual(database.listBookmarks(user.id), [])
+  assert.deepStrictEqual(database.listBlurredTags(user.id), [])
+  assert.deepStrictEqual(database.findUserBySessionToken('keep-session'), user)
+
+  database.addBookmark(user.id, 101, 'Saved work 2')
+  database.addBlurredTag(user.id, 'guro')
+  assert.strictEqual(database.deleteUser(user.id), true)
+  assert.strictEqual(database.deleteUser(user.id), false)
+  assert.strictEqual(database.findUserBySessionToken('keep-session'), null)
+  assert.deepStrictEqual(database.listBookmarks(user.id), [])
+  assert.deepStrictEqual(database.listBlurredTags(user.id), [])
+})

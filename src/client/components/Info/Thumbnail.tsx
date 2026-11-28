@@ -1,23 +1,23 @@
 import { developmentThumbnail } from "../../utils/developmentThumbnail"
-import { EyeClosedIcon } from "@radix-ui/react-icons"
-import { Button, IconButton, Link, Skeleton } from "@radix-ui/themes"
+import { EyeNoneIcon } from "@radix-ui/react-icons"
+import { Link, Skeleton } from "@radix-ui/themes"
 import { useState, useEffect, useRef } from "react"
 import { matchBlurredTags, useBlurredTags } from "../BlurredTags"
 
 const InfoThumbnail = ({ id, tags = [] }: { id: number; tags?: string[] }) => {
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(developmentThumbnail ?? null)
   const [loadedUrl, setLoadedUrl] = useState<string | null>(null)
-  const [revealed, setRevealed] = useState(false)
+  const [hovered, setHovered] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const imgRef = useRef<HTMLImageElement>(null)
   const { tags: blurredTags, blurAll } = useBlurredTags()
   const matchedTags = matchBlurredTags(tags, blurredTags)
   const shouldBlur = blurAll || matchedTags.length > 0
-  const isBlurred = shouldBlur && !revealed
+  const isBlurred = shouldBlur && !hovered
   const loaded = Boolean(thumbnailUrl && loadedUrl === thumbnailUrl)
 
   useEffect(() => {
-    setRevealed(false)
+    setHovered(false)
   }, [id])
 
   useEffect(() => {
@@ -50,6 +50,10 @@ const InfoThumbnail = ({ id, tags = [] }: { id: number; tags?: string[] }) => {
   return (
     <div
       ref={containerRef}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onFocus={() => setHovered(true)}
+      onBlur={() => setHovered(false)}
       style={{
         position: "relative",
         width: "12.5rem",
@@ -83,44 +87,30 @@ const InfoThumbnail = ({ id, tags = [] }: { id: number; tags?: string[] }) => {
           />
         )}
       </Link>
-      {isBlurred && (
-        <Button
-          type="button"
-          size="1"
-          variant="solid"
-          color="gray"
-          aria-label="Reveal blurred thumbnail"
-          onClick={() => setRevealed(true)}
+      {shouldBlur && (
+        <div
+          aria-hidden="true"
           style={{
             position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
+            inset: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            pointerEvents: "none",
+            opacity: isBlurred ? 0.65 : 0,
+            transition: "opacity 180ms ease",
             zIndex: 1,
           }}
         >
-          <EyeClosedIcon />
-          {matchedTags.length > 0 ? `${matchedTags.length} tag${matchedTags.length > 1 ? "s" : ""}` : "Blurred"}
-        </Button>
-      )}
-      {shouldBlur && revealed && (
-        <IconButton
-          type="button"
-          size="1"
-          variant="solid"
-          color="gray"
-          aria-label="Blur thumbnail"
-          title="Blur thumbnail"
-          onClick={() => setRevealed(false)}
-          style={{
-            position: "absolute",
-            top: "0.5rem",
-            right: "0.5rem",
-            zIndex: 1,
-          }}
-        >
-          <EyeClosedIcon />
-        </IconButton>
+          <EyeNoneIcon
+            style={{
+              width: "2.25rem",
+              height: "2.25rem",
+              color: "#fff",
+              filter: "drop-shadow(0 0.125rem 0.5rem rgba(0, 0, 0, 0.55))",
+            }}
+          />
+        </div>
       )}
     </div>
   )

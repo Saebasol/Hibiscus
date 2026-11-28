@@ -255,12 +255,53 @@ test('OIDC and bookmark routes support a complete signed-in session', async t =>
   assert.equal(removedBlur.statusCode, 200)
   assert.deepEqual(removedBlur.json(), { tags: [] })
 
+  await app.inject({
+    method: 'PUT', url: '/internal/bookmarks/456',
+    headers: { cookie: sessionCookie, origin: publicOrigin, 'content-type': 'application/json' },
+    payload: { title: 'Work to clear' },
+  })
+  await app.inject({
+    method: 'PUT', url: '/internal/blurred-tags',
+    headers: { cookie: sessionCookie, origin: publicOrigin, 'content-type': 'application/json' },
+    payload: { tag: 'guro' },
+  })
+  assert.equal((await app.inject({
+    method: 'POST', url: '/auth/clear-data', payload: '',
+    headers: { cookie: sessionCookie, origin: 'https://attacker.example', 'content-type': 'application/x-www-form-urlencoded' },
+  })).statusCode, 403)
+  const cleared = await app.inject({
+    method: 'POST', url: '/auth/clear-data', payload: '',
+    headers: { cookie: sessionCookie, origin: publicOrigin, 'content-type': 'application/x-www-form-urlencoded' },
+  })
+  assert.equal(cleared.statusCode, 302)
+  assert.equal(cleared.headers.location, '/login?notice=data_cleared')
+  assert.deepEqual((await app.inject({ url: '/internal/bookmarks', headers: { cookie: sessionCookie } })).json(), { bookmarks: [] })
+  assert.deepEqual((await app.inject({ url: '/internal/blurred-tags', headers: { cookie: sessionCookie } })).json(), { tags: [] })
+
   const logout = await app.inject({
     method: 'POST', url: '/auth/logout', payload: '',
     headers: { cookie: sessionCookie, origin: publicOrigin, 'content-type': 'application/x-www-form-urlencoded' },
   })
   assert.equal(logout.statusCode, 302)
   assert.equal((await app.inject({ url: '/internal/bookmarks', headers: { cookie: sessionCookie } })).statusCode, 401)
+
+  database.createSession(1, 'delete-account-session', 60)
+  const deleteCookie = `${SESSION_COOKIE}=delete-account-session`
+  database.addBookmark(1, 789, 'Work before account delete')
+  database.addBlurredTag(1, 'guro')
+  assert.equal((await app.inject({
+    method: 'POST', url: '/auth/delete-account', payload: '',
+    headers: { cookie: deleteCookie, origin: 'https://attacker.example', 'content-type': 'application/x-www-form-urlencoded' },
+  })).statusCode, 403)
+  const deleted = await app.inject({
+    method: 'POST', url: '/auth/delete-account', payload: '',
+    headers: { cookie: deleteCookie, origin: publicOrigin, 'content-type': 'application/x-www-form-urlencoded' },
+  })
+  assert.equal(deleted.statusCode, 302)
+  assert.equal(deleted.headers.location, '/login?notice=account_deleted')
+  assert.equal((await app.inject({ url: '/internal/bookmarks', headers: { cookie: deleteCookie } })).statusCode, 401)
+  assert.deepEqual(database.listBookmarks(1), [])
+  assert.deepEqual(database.listBlurredTags(1), [])
 
   const replay = await app.inject({ method: 'GET', url: '/auth/callback?code=test-authorization-code&state=' + state, headers: { cookie: stateCookie } })
   assert.equal(replay.headers.location, '/login?error=invalid_request')

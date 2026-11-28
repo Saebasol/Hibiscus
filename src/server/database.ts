@@ -358,4 +358,20 @@ export default class HibiscusDatabase {
 
     return result.changes > 0
   }
+
+  clearUserData(userId: number): void {
+    assertPositiveSafeInteger(userId, 'userId')
+
+    this.db.transaction(() => {
+      this.db.prepare('DELETE FROM bookmarks WHERE user_id = ?').run(userId)
+      this.db.prepare('DELETE FROM blurred_tags WHERE user_id = ?').run(userId)
+    })()
+  }
+
+  deleteUser(userId: number): boolean {
+    assertPositiveSafeInteger(userId, 'userId')
+
+    const result = this.db.prepare('DELETE FROM users WHERE id = ?').run(userId)
+    return result.changes > 0
+  }
 }

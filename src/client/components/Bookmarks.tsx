@@ -1,8 +1,9 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { BookmarkIcon } from '@radix-ui/react-icons'
 import { Button, Card, Flex, IconButton, Text } from '@radix-ui/themes'
-import { useLocation } from 'react-router'
 import { useTypedRouteContext } from '../utils/useRouteContext'
+
+const LOCAL_BOOKMARKS_KEY = 'hibiscus.bookmarks'
 
 export interface ClientBookmark {
   workId: number
@@ -27,6 +28,35 @@ function loginUrl(returnTo = '/list/1') {
   return '/login?returnTo=' + encodeURIComponent(returnTo)
 }
 
+function readLocalBookmarks(): ClientBookmark[] {
+  if (typeof localStorage === 'undefined') return []
+  try {
+    const raw = localStorage.getItem(LOCAL_BOOKMARKS_KEY)
+    if (!raw) return []
+    const parsed = JSON.parse(raw)
+    if (!Array.isArray(parsed)) return []
+    return parsed.filter(
+      (item): item is ClientBookmark =>
+        Boolean(item)
+        && typeof item.workId === 'number'
+        && Number.isSafeInteger(item.workId)
+        && typeof item.title === 'string'
+        && typeof item.createdAt === 'number',
+    )
+  } catch {
+    return []
+  }
+}
+
+function writeLocalBookmarks(bookmarks: ClientBookmark[]) {
+  if (typeof localStorage === 'undefined') return
+  try {
+    localStorage.setItem(LOCAL_BOOKMARKS_KEY, JSON.stringify(bookmarks))
+  } catch {
+    // Storage is optional.
+  }
+}
+
 export function BookmarksProvider({ children }: { children: React.ReactNode }) {
   const { state } = useTypedRouteContext<unknown>()
   const userId = state.currentUser?.id
@@ -38,7 +68,7 @@ export function BookmarksProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!userId) {
-      setBookmarks(null)
+      setBookmarks(readLocalBookmarks())
       setError(null)
       setMutationError(null)
       return
@@ -65,10 +95,21 @@ export function BookmarksProvider({ children }: { children: React.ReactNode }) {
   }, [userId, attempt])
 
   const toggleBookmark = async (workId: number, title: string) => {
-    if (!userId || pendingIds.has(workId)) return
+    if (pendingIds.has(workId)) return
     setMutationError(null)
-    setPendingIds(current => new Set(current).add(workId))
     const bookmarked = bookmarks?.some(bookmark => bookmark.workId === workId) === true
+
+    if (!userId) {
+      const base = bookmarks ?? readLocalBookmarks()
+      const updated = bookmarked
+        ? base.filter(bookmark => bookmark.workId !== workId)
+        : [{ workId, title, createdAt: Date.now() }, ...base.filter(bookmark => bookmark.workId !== workId)]
+      setBookmarks(updated)
+      writeLocalBookmarks(updated)
+      return
+    }
+
+    setPendingIds(current => new Set(current).add(workId))
 
     try {
       const response = await fetch('/internal/bookmarks/' + workId, bookmarked
@@ -137,22 +178,6 @@ export function useBookmarks() {
 
 export function BookmarkButton({ workId, title, compact = false }: { workId: number; title: string; compact?: boolean }) {
   const bookmarks = useBookmarks()
-  const location = useLocation()
-  if (!bookmarks.authEnabled) return null
-
-  if (!bookmarks.signedIn) {
-    const href = loginUrl(location.pathname + location.search + location.hash)
-    return compact ? (
-      <IconButton asChild size="1" variant="solid" color="gray" aria-label="Log in to bookmark" title="Log in to bookmark">
-        <a href={href}><BookmarkIcon /></a>
-      </IconButton>
-    ) : (
-      <Button asChild size="1" variant="solid" color="gray" style={{ flexShrink: 0 }}>
-        <a href={href}><BookmarkIcon /> Log in to bookmark</a>
-      </Button>
-    )
-  }
-
   const bookmarked = bookmarks.isBookmarked(workId)
   const label = bookmarked ? 'Remove bookmark' : 'Add bookmark'
   const disabled = bookmarks.bookmarks === null || bookmarks.pendingIds.has(workId)
@@ -166,7 +191,10 @@ export function BookmarkButton({ workId, title, compact = false }: { workId: num
     <Button type="button" size="1" variant="solid" color={bookmarked ? 'ruby' : 'gray'}
       style={{ flexShrink: 0 }} aria-pressed={bookmarked} disabled={disabled}
       onClick={() => void bookmarks.toggleBookmark(workId, title)}>
-      <BookmarkIcon /> {bookmarked ? 'Bookmarked' : 'Bookmark'}
+      <BookmarkIcon />
+      <span key={bookmarked ? 'bookmarked' : 'bookmark'}>
+        {bookmarked ? 'Bookmarked' : 'Bookmark'}
+      </span>
     </Button>
   )
 }

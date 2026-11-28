@@ -1,17 +1,22 @@
 import { createContext, useContext, useEffect, useState } from 'react'
-import { Cross2Icon, EyeClosedIcon, EyeOpenIcon, PlusIcon } from '@radix-ui/react-icons'
-import { Badge, Button, Dialog, Flex, IconButton, Switch, Text, TextField } from '@radix-ui/themes'
+import { Cross2Icon, PlusIcon } from '@radix-ui/react-icons'
+import { Badge, Button, Dialog, Flex, Switch, Text, TextField } from '@radix-ui/themes'
 import type { Tags as HeliotropeTags } from '@saebasol/delphinium'
 import { useTypedRouteContext } from '../utils/useRouteContext'
 
 const BLUR_ALL_KEY = 'hibiscus.blurAll'
 const BLURRED_TAGS_KEY = 'hibiscus.blurredTags'
+const SYNC_BLURRED_TAGS_KEY = 'hibiscus.syncBlurredTags'
 
 interface BlurredTagsContextValue {
   tags: string[]
   blurAll: boolean
+  syncEnabled: boolean
   error: string | null
+  dialogOpen: boolean
+  setDialogOpen: (open: boolean) => void
   toggleBlurAll: (next?: boolean) => void
+  toggleSync: (next?: boolean) => Promise<void>
   addTag: (tag: string) => Promise<void>
   removeTag: (tag: string) => Promise<void>
 }
@@ -77,20 +82,36 @@ function tagBadgeColor(tag: string): 'ruby' | 'blue' | 'gray' {
   return 'gray'
 }
 
+function readLocalSyncPreference(): boolean {
+  if (typeof localStorage === 'undefined') return true
+  try {
+    return localStorage.getItem(SYNC_BLURRED_TAGS_KEY) !== 'false'
+  } catch {
+    return true
+  }
+}
+
 export function BlurredTagsProvider({ children }: { children: React.ReactNode }) {
   const { state } = useTypedRouteContext<unknown>()
   const userId = state.currentUser?.id
   const [tags, setTags] = useState<string[]>([])
   const [blurAll, setBlurAll] = useState(false)
+  const [syncEnabled, setSyncEnabled] = useState(true)
+  const [storageReady, setStorageReady] = useState(false)
+  const [dialogOpen, setDialogOpen] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const shouldSyncToAccount = Boolean(userId && syncEnabled)
 
   useEffect(() => {
     setBlurAll(readLocalBlurAll())
+    setSyncEnabled(readLocalSyncPreference())
+    setStorageReady(true)
   }, [])
 
   useEffect(() => {
+    if (!storageReady) return
     setError(null)
-    if (!userId) {
+    if (!shouldSyncToAccount) {
       setTags(readLocalBlurredTags())
       return
     }
@@ -112,7 +133,7 @@ export function BlurredTagsProvider({ children }: { children: React.ReactNode })
         if (active) setError('Blurred tag settings could not be loaded.')
       })
     return () => { active = false }
-  }, [userId])
+  }, [storageReady, shouldSyncToAccount])
 
   const toggleBlurAll = (next?: boolean) => {
     setBlurAll(current => {
@@ -126,12 +147,53 @@ export function BlurredTagsProvider({ children }: { children: React.ReactNode })
     })
   }
 
+  const toggleSync = async (next?: boolean) => {
+    const updated = next ?? !syncEnabled
+    setSyncEnabled(updated)
+    try {
+      localStorage.setItem(SYNC_BLURRED_TAGS_KEY, String(updated))
+    } catch {
+      // Storage is optional.
+    }
+    if (!userId) return
+    setError(null)
+    if (!updated) {
+      const local = readLocalBlurredTags()
+      if (local.length === 0 && tags.length > 0) {
+        writeLocalBlurredTags(tags)
+      }
+      return
+    }
+    const local = readLocalBlurredTags()
+    if (local.length === 0) return
+    try {
+      let latest: string[] | null = null
+      for (const tag of local) {
+        const response = await fetch('/internal/blurred-tags', {
+          method: 'PUT',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ tag }),
+        })
+        if (response.status === 401) {
+          window.location.assign('/login?returnTo=' + encodeURIComponent(window.location.pathname + window.location.search))
+          return
+        }
+        if (!response.ok) throw new Error('Failed to sync blurred tags')
+        const payload = await response.json() as { tags: string[] }
+        latest = payload.tags
+      }
+      if (latest) setTags(latest)
+    } catch {
+      setError('Could not sync blurred tags with your account.')
+    }
+  }
+
   const addTag = async (raw: string) => {
     const tag = normalizeBlurTag(raw)
     if (!tag || tag.length > 200 || tags.includes(tag)) return
     setError(null)
 
-    if (!userId) {
+    if (!shouldSyncToAccount) {
       const updated = [...tags, tag]
       setTags(updated)
       writeLocalBlurredTags(updated)
@@ -161,7 +223,7 @@ export function BlurredTagsProvider({ children }: { children: React.ReactNode })
     if (!tag) return
     setError(null)
 
-    if (!userId) {
+    if (!shouldSyncToAccount) {
       const updated = tags.filter(entry => entry !== tag)
       setTags(updated)
       writeLocalBlurredTags(updated)
@@ -185,7 +247,18 @@ export function BlurredTagsProvider({ children }: { children: React.ReactNode })
   }
 
   return (
-    <BlurredTagsContext.Provider value={{ tags, blurAll, error, toggleBlurAll, addTag, removeTag }}>
+    <BlurredTagsContext.Provider value={{
+      tags,
+      blurAll,
+      syncEnabled,
+      error,
+      dialogOpen,
+      setDialogOpen,
+      toggleBlurAll,
+      toggleSync,
+      addTag,
+      removeTag,
+    }}>
       {children}
     </BlurredTagsContext.Provider>
   )
@@ -199,14 +272,13 @@ export function useBlurredTags() {
 
 export function BlurredTagsDialog() {
   const { state } = useTypedRouteContext<unknown>()
-  const { tags, blurAll, error, toggleBlurAll, addTag, removeTag } = useBlurredTags()
-  const [open, setOpen] = useState(false)
+  const { tags, blurAll, syncEnabled, error, dialogOpen, setDialogOpen, toggleBlurAll, toggleSync, addTag, removeTag } = useBlurredTags()
   const [input, setInput] = useState('')
   const [suggestions, setSuggestions] = useState<string[]>([])
   const [loadedSuggestions, setLoadedSuggestions] = useState(false)
 
   useEffect(() => {
-    if (!open || loadedSuggestions) return
+    if (!dialogOpen || loadedSuggestions) return
     const controller = new AbortController()
     fetch('/internal/tags', { signal: controller.signal, cache: 'force-cache' })
       .then(async response => {
@@ -226,13 +298,12 @@ export function BlurredTagsDialog() {
         // Manual tag input works even when autocomplete tags cannot be fetched.
       })
     return () => controller.abort()
-  }, [open, loadedSuggestions])
+  }, [dialogOpen, loadedSuggestions])
 
   const query = normalizeBlurTag(input)
   const matchingSuggestions = query.length >= 2
     ? suggestions.filter(item => item.includes(query) && !tags.includes(item)).slice(0, 10)
     : []
-  const active = blurAll || tags.length > 0
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault()
@@ -242,33 +313,56 @@ export function BlurredTagsDialog() {
   }
 
   return (
-    <Dialog.Root open={open} onOpenChange={setOpen}>
-      <Dialog.Trigger>
-        <IconButton
-          size="2"
-          variant={active ? 'solid' : 'soft'}
-          color={active ? 'ruby' : 'gray'}
-          aria-label="Thumbnail blur settings"
-          title="Thumbnail blur settings"
-        >
-          {active ? <EyeClosedIcon /> : <EyeOpenIcon />}
-        </IconButton>
-      </Dialog.Trigger>
-
+    <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
       <Dialog.Content maxWidth="28rem">
         <Dialog.Title>Thumbnail blur</Dialog.Title>
         <Dialog.Description size="2" color="gray" mb="4">
-          Blur thumbnails for works with matching tags, or blur all thumbnails at once.{' '}
-          {state.currentUser ? 'Tag rules are saved to your account.' : 'Tag rules are saved in this browser.'}
+          <span key={blurAll ? 'blur-all' : 'blur-tags'}>
+            {blurAll
+              ? 'All thumbnails are currently blurred. Hover over a thumbnail to preview it. '
+              : 'Only thumbnails matching your blocked tags are blurred. Hover over a blurred thumbnail to preview it. '}
+          </span>
+          <span key={state.currentUser && syncEnabled ? 'sync-on' : 'sync-off'}>
+            {state.currentUser && syncEnabled
+              ? `Blocked tags sync with your ${state.authProviderName} account.`
+              : 'Blocked tags are saved in this browser only.'}
+          </span>
         </Dialog.Description>
 
         <Flex direction="column" gap="4">
           <Flex asChild align="center" justify="between" gap="3">
             <label>
-              <Text size="2" weight="medium">Blur all thumbnails</Text>
+              <Flex direction="column" gap="1">
+                <Text size="2" weight="medium">Blur all thumbnails</Text>
+                <Text size="1" color="gray">
+                  <span key={blurAll ? 'all' : 'tags'}>
+                    {blurAll
+                      ? 'Every thumbnail is blurred regardless of tags'
+                      : 'Only works matching your blocked tags are blurred'}
+                  </span>
+                </Text>
+              </Flex>
               <Switch checked={blurAll} onCheckedChange={checked => toggleBlurAll(checked)} />
             </label>
           </Flex>
+
+          {state.authEnabled && state.currentUser && (
+            <Flex asChild align="center" justify="between" gap="3">
+              <label>
+                <Flex direction="column" gap="1">
+                  <Text size="2" weight="medium">Sync blocked tags with account</Text>
+                  <Text size="1" color="gray">
+                    <span key={syncEnabled ? 'on' : 'off'}>
+                      {syncEnabled
+                        ? `Synced with your ${state.authProviderName} account`
+                        : 'Saved in this browser only (not synced)'}
+                    </span>
+                  </Text>
+                </Flex>
+                <Switch checked={syncEnabled} onCheckedChange={checked => void toggleSync(checked)} />
+              </label>
+            </Flex>
+          )}
 
           <form onSubmit={handleSubmit}>
             <Flex gap="2" align="center">
