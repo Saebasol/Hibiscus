@@ -7,8 +7,6 @@ import { Route, Routes } from 'react-router'
 import { AppRoute, Router } from '$app/core.tsx'
 import { Theme } from '@radix-ui/themes'
 import RouteErrorBoundary from './components/RouteErrorBoundary'
-import { BookmarksProvider } from './components/Bookmarks'
-import { BlurredTagsProvider } from './components/BlurredTags'
 
 const Root = ({ url, routes, ctxHydration, routeMap }: {
   url?: string
@@ -32,11 +30,7 @@ const Root = ({ url, routes, ctxHydration, routeMap }: {
                   >
 
                     <RouteErrorBoundary>
-                      <BookmarksProvider>
-                        <BlurredTagsProvider>
-                          <Component />
-                        </BlurredTagsProvider>
-                      </BookmarksProvider>
+                      <Component />
                     </RouteErrorBoundary>
 
                   </AppRoute>
